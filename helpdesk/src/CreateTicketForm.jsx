@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import ReCAPTCHA from "react-google-recaptcha";
 
-const categories = ["Normal", "Standard", "Premium"];
+const categories = ["Access Issue", "Feedback", "Ticketing"];
+const priorities = ["High", "Medium", "Low"];
 
 const CreateTicketForm = ({ onBack }) => {
   const [form, setForm] = useState({
@@ -143,14 +144,18 @@ const CreateTicketForm = ({ onBack }) => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 text-black dark:text-white">Priority</label>
-              <input
-                type="text"
+              <select
                 name="priority"
                 value={form.priority}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white"
                 required
-              />
+              >
+                <option value="" disabled>Select Priority</option>
+                {priorities.map((priority) => (
+                  <option key={priority} value={priority}>{priority}</option>
+                ))}
+              </select>
             </div>
           </div>
           <div>

@@ -61,6 +61,9 @@ const Sidebar = ({ profile, setSidebarOpen, onNavigate }) => {
               } else if (item.label === 'New Ticket' && typeof onNavigate === 'function') {
                 onNavigate('new-ticket');
                 setSidebarOpen && setSidebarOpen(false);
+              } else if (item.label === 'My Ticket' && typeof onNavigate === 'function') {
+                onNavigate('my-ticket');
+                setSidebarOpen && setSidebarOpen(false);
               } else {
                 setSidebarOpen && setSidebarOpen(false);
               }

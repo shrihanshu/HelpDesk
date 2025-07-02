@@ -5,7 +5,7 @@ import Footer from "./Footer";
 import DashboardCard from "./DashboardCard";
 import { Card, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChartBar, FaStar, FaRegStar, FaStarHalfAlt, FaUserFriends, FaTicketAlt, FaCheckCircle, FaHourglassHalf, FaSpinner } from "react-icons/fa";
+import { FaChartBar, FaStar, FaRegStar, FaStarHalfAlt, FaUserFriends, FaTicketAlt, FaCheckCircle, FaHourglassHalf, FaSpinner, FaSearch, FaClipboardList } from "react-icons/fa";
 import CreateTicketForm from "./CreateTicketForm";
 
 const cardMotion = {
@@ -15,10 +15,89 @@ const cardMotion = {
   whileHover: { scale: 1.03, boxShadow: "0 8px 32px rgba(0,0,0,0.18)" },
 };
 
+// Generate 15 random tickets for 3 pages, now with status
+const statusOptions = [
+  { label: "In Progress", color: "bg-green-300 text-green-900" },
+  { label: "On hold", color: "bg-yellow-400 text-yellow-900" },
+  { label: "Closed", color: "bg-red-400 text-red-900" },
+];
+function getRandomStatus() {
+  return statusOptions[Math.floor(Math.random() * statusOptions.length)];
+}
+const ticketData = [
+  { ticketNo: "1234", subject: "Login issue", status: getRandomStatus(), supportedBy: "Tech support", date: "13/08/21", rating: 0 },
+  { ticketNo: "1124", subject: "New ticket issue", status: getRandomStatus(), supportedBy: "Operation Team", date: "14/08/21", rating: 0 },
+  { ticketNo: "1224", subject: "New request", status: getRandomStatus(), supportedBy: "Tech support", date: "13/08/21", rating: 4.5 },
+  { ticketNo: "1244", subject: "Ticket submission", status: statusOptions[1], supportedBy: "Operation Team", date: "14/08/21", rating: 0 },
+  { ticketNo: "1114", subject: "Login issue", status: getRandomStatus(), supportedBy: "Tech support", date: "03/08/21", rating: 0 },
+  { ticketNo: "2001", subject: "Access problem", status: getRandomStatus(), supportedBy: "Tech support", date: "15/08/21", rating: 3 },
+  { ticketNo: "2002", subject: "Feedback on UI", status: getRandomStatus(), supportedBy: "Operation Team", date: "16/08/21", rating: 2.5 },
+  { ticketNo: "2003", subject: "Ticket not closing", status: getRandomStatus(), supportedBy: "Tech support", date: "17/08/21", rating: 5 },
+  { ticketNo: "2004", subject: "Feature request", status: getRandomStatus(), supportedBy: "Operation Team", date: "18/08/21", rating: 1 },
+  { ticketNo: "2005", subject: "Bug report", status: getRandomStatus(), supportedBy: "Tech support", date: "19/08/21", rating: 4 },
+  { ticketNo: "3001", subject: "Slow response", status: getRandomStatus(), supportedBy: "Operation Team", date: "20/08/21", rating: 2 },
+  { ticketNo: "3002", subject: "Account locked", status: getRandomStatus(), supportedBy: "Tech support", date: "21/08/21", rating: 3.5 },
+  { ticketNo: "3003", subject: "Password reset", status: getRandomStatus(), supportedBy: "Operation Team", date: "22/08/21", rating: 0 },
+  { ticketNo: "3004", subject: "App crash", status: getRandomStatus(), supportedBy: "Tech support", date: "23/08/21", rating: 4.5 },
+  { ticketNo: "3005", subject: "General feedback", status: getRandomStatus(), supportedBy: "Operation Team", date: "24/08/21", rating: 1.5 },
+];
+
+function AppTicketModal({ ticket, open, onClose }) {
+  if (!open || !ticket) return null;
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl p-8 w-full max-w-lg relative"
+          initial={{ scale: 0.85, y: 40, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          exit={{ scale: 0.85, y: 40, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 180, damping: 18 }}
+          onClick={e => e.stopPropagation()}
+        >
+          <h3 className="text-2xl font-bold mb-6 text-center text-black dark:text-white font-[Poppins]">Ticket Details</h3>
+          <div className="space-y-2 text-black dark:text-white text-base">
+            <div><span className="font-semibold">Ticket No.:</span> {ticket.ticketNo}</div>
+            <div><span className="font-semibold">Date:</span> {ticket.date || '-'}</div>
+            <div><span className="font-semibold">Name:</span> {ticket.name || '-'}</div>
+            <div><span className="font-semibold">Dept:</span> {ticket.department || '-'}</div>
+            <div className="mt-4"><span className="font-semibold">Title:</span> {ticket.subject || '-'}</div>
+            <div><span className="font-semibold">Description:</span> {ticket.description || '-'}</div>
+            <div><span className="font-semibold">Category:</span> {ticket.category || '-'}</div>
+            <div><span className="font-semibold">Type:</span> {ticket.type || '-'}</div>
+            <div><span className="font-semibold">Priority:</span> {ticket.priority || '-'}</div>
+            <div><span className="font-semibold">Status:</span> <span className={`px-2 py-1 rounded-full font-semibold text-sm ${ticket.status?.color}`}>{ticket.status?.label || '-'}</span></div>
+            <div><span className="font-semibold">Attachment:</span> {ticket.attachment || '-'}</div>
+          </div>
+          <div className="flex justify-center mt-8">
+            <button
+              className="px-8 py-2 rounded-lg bg-green-400 hover:bg-green-500 text-white font-bold text-lg shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-green-400"
+              onClick={onClose}
+            >
+              OK
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 const Dashboard = ({ onLogout, profile, setProfile }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [view, setView] = useState("dashboard");
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ticketsPerPage = 5;
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -45,6 +124,19 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
     setView(viewName);
     if (isMobile) setSidebarOpen(false);
     else setSidebarOpen(true);
+  };
+
+  // Filter tickets by search
+  const filteredTickets = ticketData.filter(ticket =>
+    Object.values(ticket).some(val =>
+      String(val).toLowerCase().includes(search.toLowerCase())
+    )
+  );
+  const totalPages = Math.ceil(filteredTickets.length / ticketsPerPage);
+  const paginatedTickets = filteredTickets.slice((currentPage - 1) * ticketsPerPage, currentPage * ticketsPerPage);
+
+  const handlePageChange = (e) => {
+    setCurrentPage(Number(e.target.value));
   };
 
   return (
@@ -204,11 +296,107 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
               {view === "new-ticket" && profile === "User" && (
                 <CreateTicketForm key="new-ticket" onBack={() => setView("dashboard")} />
               )}
+              {view === "my-ticket" && profile === "User" && (
+                <div>
+                  <h2 className="text-2xl font-bold mb-4 text-black dark:text-white font-[Poppins] text-center flex items-center justify-center gap-3">
+                    <FaClipboardList className="inline text-teal-600 dark:text-teal-300 text-3xl" />
+                    List Of Tickets
+                  </h2>
+                  {/* Page navigation dropdown */}
+                  <div className="flex justify-end items-center mb-4">
+                    <label htmlFor="page-select" className="mr-2 text-black dark:text-white font-medium">Page:</label>
+                    <select
+                      id="page-select"
+                      value={currentPage}
+                      onChange={handlePageChange}
+                      className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white shadow-sm"
+                    >
+                      {Array.from({ length: totalPages }, (_, i) => (
+                        <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {/* Search box with icon */}
+                  <div className="flex justify-center mb-6">
+                    <div className="relative w-full max-w-md">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <FaSearch />
+                      </span>
+                      <input
+                        type="text"
+                        value={search}
+                        onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
+                        placeholder="Search tickets..."
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white shadow-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700">
+                    <table className="min-w-full bg-white dark:bg-neutral-900">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-teal-100 to-blue-100 dark:from-teal-900 dark:to-blue-900">
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white rounded-tl-2xl">Ticket No.</th>
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white">Subject</th>
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white">Status</th>
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white">Supported By</th>
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white">Date</th>
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white rounded-tr-2xl">Ratings</th>
+                        </tr>
+                      </thead>
+                      <AnimatePresence mode="wait">
+                        <motion.tbody
+                          key={currentPage + '-' + search}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3, type: "spring", stiffness: 100 }}
+                        >
+                          {paginatedTickets.length === 0 ? (
+                            <tr>
+                              <td colSpan={5} className="text-center py-8 text-neutral-500 dark:text-neutral-400">No tickets found.</td>
+                            </tr>
+                          ) : (
+                            paginatedTickets.map((ticket, idx) => (
+                              <tr key={ticket.ticketNo} className={idx % 2 === 0 ? "bg-neutral-50 dark:bg-neutral-800" : "bg-white dark:bg-neutral-900"}>
+                                <td
+                                  className="px-6 py-3 text-blue-700 underline cursor-pointer hover:text-blue-900 transition font-semibold"
+                                  onClick={() => { setSelectedTicket(ticket); setModalOpen(true); }}
+                                >
+                                  {ticket.ticketNo}
+                                </td>
+                                <td className="px-6 py-3 text-black dark:text-white font-medium">{ticket.subject}</td>
+                                <td className="px-6 py-3">
+                                  <span className={`px-3 py-1 rounded-full font-semibold text-sm ${ticket.status.color}`}>{ticket.status.label}</span>
+                                </td>
+                                <td className="px-6 py-3 text-black dark:text-white font-medium">{ticket.supportedBy}</td>
+                                <td className="px-6 py-3 text-black dark:text-white font-medium">{ticket.date}</td>
+                                <td className="px-6 py-3">
+                                  {[1,2,3,4,5].map((star) => {
+                                    if (ticket.rating >= star) {
+                                      return <FaStar key={star} className="inline text-yellow-400 text-lg" />;
+                                    } else if (ticket.rating >= star - 0.5) {
+                                      return <FaStarHalfAlt key={star} className="inline text-yellow-400 text-lg" />;
+                                    } else {
+                                      return <FaRegStar key={star} className="inline text-gray-300 text-lg" />;
+                                    }
+                                  })}
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </motion.tbody>
+                      </AnimatePresence>
+                    </table>
+                  </div>
+                  <div className="mt-2 text-sm text-black dark:text-white text-center">Showing {paginatedTickets.length} of {filteredTickets.length} entries (Page {currentPage} of {totalPages})</div>
+                </div>
+              )}
             </AnimatePresence>
           </main>
           <Footer />
         </div>
       </div>
+      <AppTicketModal ticket={selectedTicket} open={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 };
