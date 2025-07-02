@@ -89,7 +89,8 @@ function AppTicketModal({ ticket, open, onClose }) {
   );
 }
 
-function ProfileModal({ open, onClose, userProfile }) {
+function ProfileModal({ open, onClose, userProfile, submittedFeedback }) {
+  console.log("ProfileModal - submittedFeedback:", submittedFeedback);
   if (!open) return null;
   return (
     <AnimatePresence>
@@ -120,13 +121,52 @@ function ProfileModal({ open, onClose, userProfile }) {
             {userProfile.realName && <div className="flex items-center gap-2"><span className="font-semibold">Real Name:</span> {userProfile.realName}</div>}
             {userProfile.accessLevel && <div className="flex items-center gap-2"><span className="font-semibold">Access Level:</span> {userProfile.accessLevel}</div>}
             {userProfile.projectAccessLevel && <div className="flex items-center gap-2"><span className="font-semibold">Project Access Level:</span> {userProfile.projectAccessLevel}</div>}
+            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <h4 className="font-semibold text-black dark:text-white mb-2 flex items-center gap-2">
+                <FaStar className="text-yellow-500" />
+                Submitted Feedback
+              </h4>
+              {submittedFeedback ? (
+                <>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Rating:</span>
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <FaStar
+                          key={star}
+                          className={`w-4 h-4 ${
+                            star <= submittedFeedback.rating
+                              ? "text-yellow-500"
+                              : "text-gray-300 dark:text-gray-600"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">({submittedFeedback.rating}/5)</span>
+                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-1">{submittedFeedback.message}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Submitted on: {submittedFeedback.date}</p>
+                </>
+              ) : (
+                <p className="text-sm text-gray-600 dark:text-gray-400">No feedback submitted yet.</p>
+              )}
+            </div>
           </div>
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-8 gap-4">
             <button
               className="px-8 py-2 rounded-lg bg-green-400 hover:bg-green-500 text-white font-bold text-lg shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-green-400"
               onClick={onClose}
             >
               OK
+            </button>
+            <button
+              className="px-6 py-2 rounded-lg bg-blue-400 hover:bg-blue-500 text-white font-bold text-sm shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-blue-400"
+              onClick={() => {
+                console.log("Current submittedFeedback:", submittedFeedback);
+                alert(`Feedback status: ${submittedFeedback ? 'Present - Rating: ' + submittedFeedback.rating + ', Message: ' + submittedFeedback.message : 'Not found'}`);
+              }}
+            >
+              Debug
             </button>
           </div>
         </motion.div>
@@ -155,7 +195,7 @@ function FeedbackModal({ open, onClose, feedbackText, setFeedbackText, feedbackR
           onClick={e => e.stopPropagation()}
         >
           <h3 className="text-2xl font-bold mb-6 text-center text-black dark:text-white flex items-center gap-2"><FaStar className="text-yellow-400" /> Give Feedback</h3>
-          <form onSubmit={e => { handleFeedbackSubmit(e); onClose(); }} className="flex flex-col gap-4">
+          <form onSubmit={handleFeedbackSubmit} className="flex flex-col gap-4">
             <textarea
               className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white resize-none min-h-[80px]"
               placeholder="Write your feedback here..."
@@ -163,23 +203,31 @@ function FeedbackModal({ open, onClose, feedbackText, setFeedbackText, feedbackR
               onChange={e => setFeedbackText(e.target.value)}
               required
             />
-            <div className="flex items-center gap-1">
-              {[1,2,3,4,5].map((star) => (
-                <button
-                  type="button"
-                  key={star}
-                  onClick={() => setFeedbackRating(star)}
-                  onMouseEnter={() => setFeedbackHover(star)}
-                  onMouseLeave={() => setFeedbackHover(0)}
-                  className="focus:outline-none"
-                >
-                  {feedbackRating >= star || feedbackHover >= star ? (
-                    <FaStar className="text-2xl text-yellow-400 transition" />
-                  ) : (
-                    <FaRegStar className="text-2xl text-gray-300 transition" />
-                  )}
-                </button>
-              ))}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Rating <span className="text-red-500">*</span>
+              </label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setFeedbackRating(star)}
+                    onMouseEnter={() => setFeedbackHover(star)}
+                    onMouseLeave={() => setFeedbackHover(0)}
+                    className={`text-2xl transition-colors ${
+                      star <= feedbackRating ? "text-yellow-500" : "text-gray-300 dark:text-gray-600"
+                    }`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+              {feedbackRating && (
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  Selected rating: {feedbackRating}/5
+                </p>
+              )}
             </div>
             <button
               type="submit"
@@ -211,6 +259,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [showProfileSetting, setShowProfileSetting] = useState(false);
+  const [submittedFeedback, setSubmittedFeedback] = useState(null);
   const [userProfile, setUserProfile] = useState({
     username: "John Doe",
     contact: "+1 234 567 8901",
@@ -273,11 +322,22 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
 
   const handleFeedbackSubmit = (e) => {
     e.preventDefault();
-    setFeedbackSubmitted(true);
-    setTimeout(() => setFeedbackSubmitted(false), 2000);
+    if (!feedbackRating) {
+      alert("Please select a rating before submitting feedback.");
+      return;
+    }
+    const newFeedback = {
+      message: feedbackText,
+      rating: feedbackRating,
+      date: new Date().toLocaleDateString()
+    };
+    console.log("Submitting feedback:", newFeedback);
+    setSubmittedFeedback(newFeedback);
     setFeedbackText("");
     setFeedbackRating(0);
     setFeedbackHover(0);
+    setFeedbackModalOpen(false);
+    alert("Feedback submitted successfully! Check your profile to view it.");
   };
 
   const handleProfileInput = (e) => {
@@ -349,6 +409,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                           icon={FaTicketAlt}
                           iconBg="bg-blue-700/80 dark:bg-blue-900/80"
                           iconColor="text-blue-200"
+                          numberColor="text-blue-100"
                         />
                         <DashboardCard
                           title="Total Solved"
@@ -358,6 +419,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                           icon={FaCheckCircle}
                           iconBg="bg-green-700/80 dark:bg-green-900/80"
                           iconColor="text-green-200"
+                          numberColor="text-green-100"
                         />
                         <DashboardCard
                           title="Total Awaiting Approval"
@@ -367,6 +429,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                           icon={FaHourglassHalf}
                           iconBg="bg-orange-700/80 dark:bg-orange-900/80"
                           iconColor="text-orange-200"
+                          numberColor="text-orange-100"
                         />
                         <DashboardCard
                           title="Total in Progress"
@@ -376,6 +439,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                           icon={FaSpinner}
                           iconBg="bg-yellow-600/80 dark:bg-yellow-800/80"
                           iconColor="text-yellow-100"
+                          numberColor="text-yellow-100"
                         />
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
@@ -400,7 +464,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                           </div>
                         </Card>
                       </div>
-                      <ProfileModal open={profileModalOpen} onClose={() => setProfileModalOpen(false)} userProfile={userProfile} />
+                      <ProfileModal open={profileModalOpen} onClose={() => setProfileModalOpen(false)} userProfile={userProfile} submittedFeedback={submittedFeedback} />
                       <FeedbackModal
                         open={feedbackModalOpen}
                         onClose={() => setFeedbackModalOpen(false)}
@@ -435,6 +499,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                           icon={FaTicketAlt}
                           iconBg="bg-blue-700/80 dark:bg-blue-900/80"
                           iconColor="text-blue-200"
+                          numberColor="text-blue-100"
                         />
                         <DashboardCard
                           title="Total Solved"
@@ -444,6 +509,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                           icon={FaCheckCircle}
                           iconBg="bg-green-700/80 dark:bg-green-900/80"
                           iconColor="text-green-200"
+                          numberColor="text-green-100"
                         />
                         <DashboardCard
                           title="Total Awaiting Approval"
@@ -453,6 +519,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                           icon={FaHourglassHalf}
                           iconBg="bg-orange-700/80 dark:bg-orange-900/80"
                           iconColor="text-orange-200"
+                          numberColor="text-orange-100"
                         />
                         <DashboardCard
                           title="Total in Progress"
@@ -462,6 +529,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                           icon={FaSpinner}
                           iconBg="bg-yellow-600/80 dark:bg-yellow-800/80"
                           iconColor="text-yellow-100"
+                          numberColor="text-yellow-100"
                         />
                       </div>
 
