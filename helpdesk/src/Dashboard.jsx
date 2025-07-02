@@ -5,7 +5,7 @@ import Footer from "./Footer";
 import DashboardCard from "./DashboardCard";
 import { Card, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChartBar, FaStar, FaRegStar, FaStarHalfAlt, FaUserFriends, FaTicketAlt, FaCheckCircle, FaHourglassHalf, FaSpinner, FaSearch, FaClipboardList } from "react-icons/fa";
+import { FaChartBar, FaStar, FaRegStar, FaStarHalfAlt, FaUserFriends, FaTicketAlt, FaCheckCircle, FaHourglassHalf, FaSpinner, FaSearch, FaClipboardList, FaUser, FaPhone, FaEnvelope, FaBuilding, FaUserEdit, FaUpload } from "react-icons/fa";
 import CreateTicketForm from "./CreateTicketForm";
 
 const cardMotion = {
@@ -89,6 +89,112 @@ function AppTicketModal({ ticket, open, onClose }) {
   );
 }
 
+function ProfileModal({ open, onClose, userProfile }) {
+  if (!open) return null;
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl p-8 w-full max-w-md relative"
+          initial={{ scale: 0.85, y: 40, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          exit={{ scale: 0.85, y: 40, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 180, damping: 18 }}
+          onClick={e => e.stopPropagation()}
+        >
+          <h3 className="text-2xl font-bold mb-6 text-center text-black dark:text-white flex items-center gap-2"><FaUser /> User Profile</h3>
+          <div className="flex flex-col items-center gap-4 mb-4">
+            <img src={userProfile.avatar} alt="User Avatar" className="w-20 h-20 rounded-full border-4 border-blue-300 shadow" />
+          </div>
+          <div className="flex flex-col gap-4 text-black dark:text-white">
+            <div className="flex items-center gap-2"><FaUser className="text-gray-500" /> <span className="font-semibold">Username:</span> {userProfile.username}</div>
+            <div className="flex items-center gap-2"><FaPhone className="text-gray-500" /> <span className="font-semibold">Contact:</span> {userProfile.contact}</div>
+            <div className="flex items-center gap-2"><FaEnvelope className="text-gray-500" /> <span className="font-semibold">Email:</span> {userProfile.email}</div>
+            <div className="flex items-center gap-2"><FaBuilding className="text-gray-500" /> <span className="font-semibold">Department:</span> {userProfile.department}</div>
+            {userProfile.realName && <div className="flex items-center gap-2"><span className="font-semibold">Real Name:</span> {userProfile.realName}</div>}
+            {userProfile.accessLevel && <div className="flex items-center gap-2"><span className="font-semibold">Access Level:</span> {userProfile.accessLevel}</div>}
+            {userProfile.projectAccessLevel && <div className="flex items-center gap-2"><span className="font-semibold">Project Access Level:</span> {userProfile.projectAccessLevel}</div>}
+          </div>
+          <div className="flex justify-center mt-8">
+            <button
+              className="px-8 py-2 rounded-lg bg-green-400 hover:bg-green-500 text-white font-bold text-lg shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-green-400"
+              onClick={onClose}
+            >
+              OK
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+function FeedbackModal({ open, onClose, feedbackText, setFeedbackText, feedbackRating, setFeedbackRating, feedbackHover, setFeedbackHover, handleFeedbackSubmit, feedbackSubmitted }) {
+  if (!open) return null;
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl p-8 w-full max-w-md relative"
+          initial={{ scale: 0.85, y: 40, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          exit={{ scale: 0.85, y: 40, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 180, damping: 18 }}
+          onClick={e => e.stopPropagation()}
+        >
+          <h3 className="text-2xl font-bold mb-6 text-center text-black dark:text-white flex items-center gap-2"><FaStar className="text-yellow-400" /> Give Feedback</h3>
+          <form onSubmit={e => { handleFeedbackSubmit(e); onClose(); }} className="flex flex-col gap-4">
+            <textarea
+              className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white resize-none min-h-[80px]"
+              placeholder="Write your feedback here..."
+              value={feedbackText}
+              onChange={e => setFeedbackText(e.target.value)}
+              required
+            />
+            <div className="flex items-center gap-1">
+              {[1,2,3,4,5].map((star) => (
+                <button
+                  type="button"
+                  key={star}
+                  onClick={() => setFeedbackRating(star)}
+                  onMouseEnter={() => setFeedbackHover(star)}
+                  onMouseLeave={() => setFeedbackHover(0)}
+                  className="focus:outline-none"
+                >
+                  {feedbackRating >= star || feedbackHover >= star ? (
+                    <FaStar className="text-2xl text-yellow-400 transition" />
+                  ) : (
+                    <FaRegStar className="text-2xl text-gray-300 transition" />
+                  )}
+                </button>
+              ))}
+            </div>
+            <button
+              type="submit"
+              className="w-full py-2 rounded-lg bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold text-lg shadow-md hover:from-teal-600 hover:to-blue-600 transition-all focus:outline-none focus:ring-2 focus:ring-teal-400 mt-2 disabled:opacity-60"
+              disabled={feedbackSubmitted}
+            >
+              {feedbackSubmitted ? "Submitted!" : "Submit Feedback"}
+            </button>
+          </form>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 const Dashboard = ({ onLogout, profile, setProfile }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -98,6 +204,32 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
   const ticketsPerPage = 5;
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [feedbackText, setFeedbackText] = useState("");
+  const [feedbackRating, setFeedbackRating] = useState(0);
+  const [feedbackHover, setFeedbackHover] = useState(0);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [showProfileSetting, setShowProfileSetting] = useState(false);
+  const [userProfile, setUserProfile] = useState({
+    username: "John Doe",
+    contact: "+1 234 567 8901",
+    email: "john.doe@example.com",
+    department: "IT Support",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg"
+  });
+  const [profileImage, setProfileImage] = useState(userProfile.avatar);
+  const [profileForm, setProfileForm] = useState({
+    username: "John Doe",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+    email: "john.doe@example.com",
+    realName: "John Doe",
+    accessLevel: "User",
+    projectAccessLevel: "Basic",
+    contact: "+1 234 567 8901"
+  });
 
   useEffect(() => {
     const checkMobile = () => {
@@ -139,6 +271,44 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
     setCurrentPage(Number(e.target.value));
   };
 
+  const handleFeedbackSubmit = (e) => {
+    e.preventDefault();
+    setFeedbackSubmitted(true);
+    setTimeout(() => setFeedbackSubmitted(false), 2000);
+    setFeedbackText("");
+    setFeedbackRating(0);
+    setFeedbackHover(0);
+  };
+
+  const handleProfileInput = (e) => {
+    const { name, value } = e.target;
+    setProfileForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleProfileImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => setProfileImage(ev.target.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleProfileUpdate = (e) => {
+    e.preventDefault();
+    setUserProfile((prev) => ({
+      ...prev,
+      username: profileForm.username,
+      contact: profileForm.contact,
+      email: profileForm.email,
+      realName: profileForm.realName,
+      accessLevel: profileForm.accessLevel,
+      projectAccessLevel: profileForm.projectAccessLevel,
+      avatar: profileImage,
+    }));
+    setShowProfileSetting(false);
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-100 via-teal-50 to-green-100 dark:bg-gradient-to-br dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 transition-colors">
       <div className="flex flex-1 relative">
@@ -167,130 +337,220 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                   {/* Dashboard Title */}
                   <h2 className="text-xl font-semibold mb-4 text-black dark:text-white">Dashboard</h2>
 
-                  {/* Top Cards */}
-                  <div className="flex flex-wrap gap-6 justify-center">
-                    <DashboardCard
-                      title="Total Tickets"
-                      value={12}
-                      bgColor="bg-blue-500 dark:bg-blue-800"
-                      textColor="text-white"
-                      icon={FaTicketAlt}
-                      iconBg="bg-blue-700/80 dark:bg-blue-900/80"
-                      iconColor="text-blue-200"
-                    />
-                    <DashboardCard
-                      title="Total Solved"
-                      value={8}
-                      bgColor="bg-green-500 dark:bg-green-800"
-                      textColor="text-white"
-                      icon={FaCheckCircle}
-                      iconBg="bg-green-700/80 dark:bg-green-900/80"
-                      iconColor="text-green-200"
-                    />
-                    <DashboardCard
-                      title="Total Awaiting Approval"
-                      value={2}
-                      bgColor="bg-orange-500 dark:bg-orange-700"
-                      textColor="text-white"
-                      icon={FaHourglassHalf}
-                      iconBg="bg-orange-700/80 dark:bg-orange-900/80"
-                      iconColor="text-orange-200"
-                    />
-                    <DashboardCard
-                      title="Total in Progress"
-                      value={2}
-                      bgColor="bg-yellow-400 dark:bg-yellow-600"
-                      textColor="text-black"
-                      icon={FaSpinner}
-                      iconBg="bg-yellow-600/80 dark:bg-yellow-800/80"
-                      iconColor="text-yellow-100"
-                    />
-                  </div>
-
-                  {/* Add extra margin here for separation */}
-                  <div className="my-8" />
-
-                  {/* Chart + Team Info */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Chart area */}
-                    <motion.div {...cardMotion} className="w-full h-full">
-                      <Card className="bg-gradient-to-br from-blue-200 to-blue-400 dark:from-blue-900 dark:to-blue-700 rounded-2xl p-8 flex items-center justify-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
-                        <FaChartBar size={100} className="text-blue-900 dark:text-blue-200" />
-                      </Card>
-                    </motion.div>
-
-                    {/* Team Stats + Feedback */}
-                    <div className="space-y-4">
-                      <motion.div {...cardMotion} className="w-full h-full">
-                        <Card className="bg-gradient-to-br from-teal-200 to-teal-400 dark:from-teal-900 dark:to-teal-700 rounded-2xl p-6 text-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
-                          <div className="flex justify-around items-center">
-                            <div>
-                              <img
-                                src="https://img.icons8.com/ios-filled/100/000000/technical-support.png"
-                                alt="Tech Support"
-                                className="mx-auto mb-2 w-12"
-                              />
-                              <div className="text-lg font-bold text-black dark:text-white">3</div>
-                              <p className="text-sm text-black dark:text-white">Technical Supports</p>
-                            </div>
-                            <div>
-                              <img
-                                src="https://img.icons8.com/ios-filled/100/000000/administrator-male.png"
-                                alt="Operations"
-                                className="mx-auto mb-2 w-12"
-                              />
-                              <div className="text-lg font-bold text-black dark:text-white">4</div>
-                              <p className="text-sm text-black dark:text-white">Operation Team</p>
-                            </div>
+                  {/* User profile: Only show top 4 cards */}
+                  {profile === "User" ? (
+                    <>
+                      <div className="flex flex-wrap gap-6 justify-center">
+                        <DashboardCard
+                          title="Total Tickets"
+                          value={12}
+                          bgColor="bg-blue-500 dark:bg-blue-800"
+                          textColor="text-white"
+                          icon={FaTicketAlt}
+                          iconBg="bg-blue-700/80 dark:bg-blue-900/80"
+                          iconColor="text-blue-200"
+                        />
+                        <DashboardCard
+                          title="Total Solved"
+                          value={8}
+                          bgColor="bg-green-500 dark:bg-green-800"
+                          textColor="text-white"
+                          icon={FaCheckCircle}
+                          iconBg="bg-green-700/80 dark:bg-green-900/80"
+                          iconColor="text-green-200"
+                        />
+                        <DashboardCard
+                          title="Total Awaiting Approval"
+                          value={2}
+                          bgColor="bg-orange-500 dark:bg-orange-700"
+                          textColor="text-white"
+                          icon={FaHourglassHalf}
+                          iconBg="bg-orange-700/80 dark:bg-orange-900/80"
+                          iconColor="text-orange-200"
+                        />
+                        <DashboardCard
+                          title="Total in Progress"
+                          value={2}
+                          bgColor="bg-yellow-400 dark:bg-yellow-600"
+                          textColor="text-black"
+                          icon={FaSpinner}
+                          iconBg="bg-yellow-600/80 dark:bg-yellow-800/80"
+                          iconColor="text-yellow-100"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                        {/* User Profile Card Trigger */}
+                        <Card
+                          className="rounded-2xl p-6 shadow-lg bg-gradient-to-br from-blue-100 to-blue-300 dark:from-blue-900 dark:to-blue-700 flex flex-col gap-4 cursor-pointer hover:scale-105 transition-transform"
+                          onClick={() => setProfileModalOpen(true)}
+                        >
+                          <h3 className="text-xl font-bold mb-2 text-black dark:text-white flex items-center gap-2"><FaUser /> User Profile</h3>
+                          <div className="flex flex-col gap-2 text-black dark:text-white opacity-60 text-base">
+                            <span>Click to view profile details</span>
                           </div>
                         </Card>
-                      </motion.div>
-                    </div>
-                  </div>
+                        {/* Feedback Card Trigger */}
+                        <Card
+                          className="rounded-2xl p-6 shadow-lg bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-yellow-700 dark:to-yellow-900 flex flex-col gap-4 cursor-pointer hover:scale-105 transition-transform"
+                          onClick={() => setFeedbackModalOpen(true)}
+                        >
+                          <h3 className="text-xl font-bold mb-2 text-black dark:text-white flex items-center gap-2"><FaStar className="text-yellow-400" /> Give Feedback</h3>
+                          <div className="flex flex-col gap-2 text-black dark:text-white opacity-60 text-base">
+                            <span>Click to give feedback and rating</span>
+                          </div>
+                        </Card>
+                      </div>
+                      <ProfileModal open={profileModalOpen} onClose={() => setProfileModalOpen(false)} userProfile={userProfile} />
+                      <FeedbackModal
+                        open={feedbackModalOpen}
+                        onClose={() => setFeedbackModalOpen(false)}
+                        feedbackText={feedbackText}
+                        setFeedbackText={setFeedbackText}
+                        feedbackRating={feedbackRating}
+                        setFeedbackRating={setFeedbackRating}
+                        feedbackHover={feedbackHover}
+                        setFeedbackHover={setFeedbackHover}
+                        handleFeedbackSubmit={handleFeedbackSubmit}
+                        feedbackSubmitted={feedbackSubmitted}
+                      />
+                      <div className="flex justify-center mt-12">
+                        <button
+                          className="px-6 py-2 rounded-lg bg-teal-400 text-white font-semibold text-lg shadow hover:bg-teal-500 transition flex items-center gap-2"
+                          type="button"
+                          onClick={() => setShowProfileSetting(true)}
+                        >
+                          <FaUserEdit /> User Setting
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Top Cards */}
+                      <div className="flex flex-wrap gap-6 justify-center">
+                        <DashboardCard
+                          title="Total Tickets"
+                          value={12}
+                          bgColor="bg-blue-500 dark:bg-blue-800"
+                          textColor="text-white"
+                          icon={FaTicketAlt}
+                          iconBg="bg-blue-700/80 dark:bg-blue-900/80"
+                          iconColor="text-blue-200"
+                        />
+                        <DashboardCard
+                          title="Total Solved"
+                          value={8}
+                          bgColor="bg-green-500 dark:bg-green-800"
+                          textColor="text-white"
+                          icon={FaCheckCircle}
+                          iconBg="bg-green-700/80 dark:bg-green-900/80"
+                          iconColor="text-green-200"
+                        />
+                        <DashboardCard
+                          title="Total Awaiting Approval"
+                          value={2}
+                          bgColor="bg-orange-500 dark:bg-orange-700"
+                          textColor="text-white"
+                          icon={FaHourglassHalf}
+                          iconBg="bg-orange-700/80 dark:bg-orange-900/80"
+                          iconColor="text-orange-200"
+                        />
+                        <DashboardCard
+                          title="Total in Progress"
+                          value={2}
+                          bgColor="bg-yellow-400 dark:bg-yellow-600"
+                          textColor="text-black"
+                          icon={FaSpinner}
+                          iconBg="bg-yellow-600/80 dark:bg-yellow-800/80"
+                          iconColor="text-yellow-100"
+                        />
+                      </div>
 
-                  {/* Customer Feedback and Customers Section Side by Side */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Customer Feedback */}
-                    <motion.div {...cardMotion} className="h-full">
-                      <Card className="w-full h-full bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-yellow-700 dark:to-yellow-900 rounded-2xl p-4 text-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
-                        <h3 className="font-semibold mb-2 text-black dark:text-white">Customer Feedback</h3>
-                        <div className="flex justify-center text-yellow-400 text-xl space-x-1">
-                          <FaStar />
-                          <FaStar />
-                          <FaStar />
-                          <FaStarHalfAlt />
-                          <FaRegStar />
+                      {/* Add extra margin here for separation */}
+                      <div className="my-8" />
+
+                      {/* Chart + Team Info */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Chart area */}
+                        <motion.div {...cardMotion} className="w-full h-full">
+                          <Card className="bg-gradient-to-br from-blue-200 to-blue-400 dark:from-blue-900 dark:to-blue-700 rounded-2xl p-8 flex items-center justify-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
+                            <FaChartBar size={100} className="text-blue-900 dark:text-blue-200" />
+                          </Card>
+                        </motion.div>
+
+                        {/* Team Stats + Feedback */}
+                        <div className="space-y-4">
+                          <motion.div {...cardMotion} className="w-full h-full">
+                            <Card className="bg-gradient-to-br from-teal-200 to-teal-400 dark:from-teal-900 dark:to-teal-700 rounded-2xl p-6 text-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
+                              <div className="flex justify-around items-center">
+                                <div>
+                                  <img
+                                    src="https://img.icons8.com/ios-filled/100/000000/technical-support.png"
+                                    alt="Tech Support"
+                                    className="mx-auto mb-2 w-12"
+                                  />
+                                  <div className="text-lg font-bold text-black dark:text-white">3</div>
+                                  <p className="text-sm text-black dark:text-white">Technical Supports</p>
+                                </div>
+                                <div>
+                                  <img
+                                    src="https://img.icons8.com/ios-filled/100/000000/administrator-male.png"
+                                    alt="Operations"
+                                    className="mx-auto mb-2 w-12"
+                                  />
+                                  <div className="text-lg font-bold text-black dark:text-white">4</div>
+                                  <p className="text-sm text-black dark:text-white">Operation Team</p>
+                                </div>
+                              </div>
+                            </Card>
+                          </motion.div>
                         </div>
-                      </Card>
-                    </motion.div>
-                    {/* Customers */}
-                    <motion.div {...cardMotion} className="h-full">
-                      <Card className="w-full h-full bg-gradient-to-br from-pink-200 to-pink-400 dark:from-pink-900 dark:to-pink-700 rounded-2xl p-6 shadow-lg flex flex-col items-center transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
-                        <div className="flex items-center gap-4 mb-4">
-                          <FaUserFriends className="text-4xl text-pink-700 dark:text-pink-200" />
-                          <CardTitle className="text-2xl font-bold text-black dark:text-white">Customers</CardTitle>
-                        </div>
-                        <div className="flex gap-8">
-                          <div className="text-center">
-                            <div className="text-3xl font-extrabold text-black dark:text-white">120</div>
-                            <div className="text-sm text-black dark:text-white">Total Customers</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-3xl font-extrabold text-black dark:text-white">5</div>
-                            <div className="text-sm text-black dark:text-white">New This Week</div>
-                          </div>
-                        </div>
-                        {/* Example avatars */}
-                        <div className="flex mt-6 gap-2">
-                          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
-                          <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
-                          <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
-                          <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
-                          <span className="w-10 h-10 flex items-center justify-center rounded-full bg-pink-300 dark:bg-pink-800 text-black dark:text-white font-bold border-2 border-white dark:border-neutral-700">+8</span>
-                        </div>
-                      </Card>
-                    </motion.div>
-                  </div>
+                      </div>
+
+                      {/* Customer Feedback and Customers Section Side by Side */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Customer Feedback */}
+                        <motion.div {...cardMotion} className="h-full">
+                          <Card className="w-full h-full bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-yellow-700 dark:to-yellow-900 rounded-2xl p-4 text-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
+                            <h3 className="font-semibold mb-2 text-black dark:text-white">Customer Feedback</h3>
+                            <div className="flex justify-center text-yellow-400 text-xl space-x-1">
+                              <FaStar />
+                              <FaStar />
+                              <FaStar />
+                              <FaStarHalfAlt />
+                              <FaRegStar />
+                            </div>
+                          </Card>
+                        </motion.div>
+                        {/* Customers */}
+                        <motion.div {...cardMotion} className="h-full">
+                          <Card className="w-full h-full bg-gradient-to-br from-pink-200 to-pink-400 dark:from-pink-900 dark:to-pink-700 rounded-2xl p-6 shadow-lg flex flex-col items-center transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
+                            <div className="flex items-center gap-4 mb-4">
+                              <FaUserFriends className="text-4xl text-pink-700 dark:text-pink-200" />
+                              <CardTitle className="text-2xl font-bold text-black dark:text-white">Customers</CardTitle>
+                            </div>
+                            <div className="flex gap-8">
+                              <div className="text-center">
+                                <div className="text-3xl font-extrabold text-black dark:text-white">120</div>
+                                <div className="text-sm text-black dark:text-white">Total Customers</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="text-3xl font-extrabold text-black dark:text-white">5</div>
+                                <div className="text-sm text-black dark:text-white">New This Week</div>
+                              </div>
+                            </div>
+                            {/* Example avatars */}
+                            <div className="flex mt-6 gap-2">
+                              <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
+                              <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
+                              <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
+                              <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
+                              <span className="w-10 h-10 flex items-center justify-center rounded-full bg-pink-300 dark:bg-pink-800 text-black dark:text-white font-bold border-2 border-white dark:border-neutral-700">+8</span>
+                            </div>
+                          </Card>
+                        </motion.div>
+                      </div>
+                    </>
+                  )}
                 </motion.div>
               )}
               {view === "new-ticket" && profile === "User" && (
@@ -397,6 +657,136 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
         </div>
       </div>
       <AppTicketModal ticket={selectedTicket} open={modalOpen} onClose={() => setModalOpen(false)} />
+      {showProfileSetting && (
+        <AnimatePresence>
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="w-full max-w-2xl p-8 rounded-2xl shadow-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 flex flex-col items-center relative"
+              initial={{ scale: 0.85, y: 40, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.85, y: 40, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 180, damping: 18 }}
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                className="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-700 dark:hover:text-white focus:outline-none"
+                onClick={() => setShowProfileSetting(false)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+              <h2 className="text-3xl font-bold text-center mb-6 text-black dark:text-white font-[Poppins]">User Profile</h2>
+              <button
+                className="mb-6 px-6 py-2 rounded-t-lg bg-teal-400 text-white font-semibold text-lg shadow hover:bg-teal-500 transition flex items-center gap-2"
+                type="button"
+              >
+                <FaUserEdit /> Edit Account
+              </button>
+              <form onSubmit={handleProfileUpdate} className="w-full flex flex-col gap-4">
+                <div className="flex flex-col items-center mb-4">
+                  <img src={profileImage} alt="User Avatar" className="w-24 h-24 rounded-full border-4 border-blue-300 shadow mb-2" />
+                  <label className="flex items-center gap-2 cursor-pointer text-teal-600 hover:text-teal-800">
+                    <FaUpload />
+                    <span>Upload Image</span>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleProfileImageChange} />
+                  </label>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Username</label>
+                    <input
+                      type="text"
+                      value={profileForm.username}
+                      onChange={(e) => setProfileForm({...profileForm, username: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Number</label>
+                    <input
+                      type="tel"
+                      value={profileForm.contact}
+                      onChange={(e) => setProfileForm({...profileForm, contact: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Password</label>
+                    <input
+                      type="password"
+                      value={profileForm.currentPassword}
+                      onChange={(e) => setProfileForm({...profileForm, currentPassword: e.target.value})}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    value={profileForm.newPassword}
+                    onChange={handleProfileInput}
+                    placeholder="New Password"
+                    className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white"
+                  />
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={profileForm.confirmPassword}
+                    onChange={handleProfileInput}
+                    placeholder="Confirm Password"
+                    className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white"
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={profileForm.email}
+                    onChange={handleProfileInput}
+                    placeholder="Email"
+                    className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="realName"
+                    value={profileForm.realName}
+                    onChange={handleProfileInput}
+                    placeholder="Real Name"
+                    className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white"
+                  />
+                  <input
+                    type="text"
+                    name="accessLevel"
+                    value={profileForm.accessLevel}
+                    onChange={handleProfileInput}
+                    placeholder="Access Level"
+                    className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white"
+                  />
+                  <input
+                    type="text"
+                    name="projectAccessLevel"
+                    value={profileForm.projectAccessLevel}
+                    onChange={handleProfileInput}
+                    placeholder="Project Access Level"
+                    className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="mt-4 w-full py-2 rounded-lg bg-teal-400 hover:bg-teal-500 text-white font-bold text-lg shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-teal-400"
+                >
+                  Update User
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+      )}
     </div>
   );
 };

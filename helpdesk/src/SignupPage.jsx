@@ -1,4 +1,5 @@
 import React from "react";
+import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
 
 const SignupPage = ({ onShowLogin, onShowForgot }) => {
   return (
@@ -10,25 +11,34 @@ const SignupPage = ({ onShowLogin, onShowForgot }) => {
         <p className="text-center mb-6 text-neutral-700 dark:text-neutral-300">Sign up here</p>
         <form>
           <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Username"
-              className="w-full p-3 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
-            />
+            <div className="relative">
+              <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Username"
+                className="w-full p-3 pl-10 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+              />
+            </div>
           </div>
           <div className="mb-4">
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full p-3 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
-            />
+            <div className="relative">
+              <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full p-3 pl-10 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+              />
+            </div>
           </div>
           <div className="mb-6">
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full p-3 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
-            />
+            <div className="relative">
+              <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-full p-3 pl-10 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+              />
+            </div>
           </div>
           <button type="submit" className="w-full bg-black hover:bg-neutral-800 focus:bg-neutral-900 text-white py-2 rounded-lg font-semibold text-lg transition mb-4 dark:bg-white dark:text-black dark:hover:bg-neutral-200 dark:focus:bg-neutral-300 transition-colors">
             Sign Up
