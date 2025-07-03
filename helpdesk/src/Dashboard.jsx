@@ -477,6 +477,8 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
     alert(`Download for Ticket #${ticket.ticketNo} is not implemented yet.`);
   };
 
+  console.log("Dashboard render:", { profile, view });
+
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-100 via-teal-50 to-green-100 dark:bg-gradient-to-br dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 transition-colors">
       <div className="flex flex-1 relative">
@@ -1319,6 +1321,93 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                     <button onClick={() => setLogCurrentPage(logTotalPages)} disabled={logCurrentPage === logTotalPages} className="px-2 py-1 rounded disabled:opacity-50">&raquo;</button>
                   </div>
                 </motion.div>
+              )}
+              {view === "my-ticket" && profile === "Operation Team" && (
+                <div>
+                  <h2 className="text-2xl font-bold mb-4 text-black dark:text-white font-[Poppins] text-center flex items-center justify-center gap-3">
+                    <FaClipboardList className="inline text-teal-600 dark:text-teal-300 text-3xl" />
+                    My Ticket
+                  </h2>
+                  {/* Page navigation dropdown */}
+                  <div className="flex justify-end items-center mb-4">
+                    <label htmlFor="page-select-ot" className="mr-2 text-black dark:text-white font-medium">Page:</label>
+                    <select
+                      id="page-select-ot"
+                      value={currentPage}
+                      onChange={handlePageChange}
+                      className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white shadow-sm"
+                    >
+                      {Array.from({ length: totalPages }, (_, i) => (
+                        <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {/* Search box with icon */}
+                  <div className="flex justify-center mb-6">
+                    <div className="relative w-full max-w-md">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <FaSearch />
+                      </span>
+                      <input
+                        type="text"
+                        value={search}
+                        onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
+                        placeholder="Find ticket"
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white shadow-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700">
+                    <table className="min-w-full bg-white dark:bg-neutral-900">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-teal-100 to-blue-100 dark:from-teal-900 dark:to-blue-900">
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white rounded-tl-2xl">Ticket No.</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Subject</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Category</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Priority</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Date</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Status</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Person in charge</th>
+                          <th className="px-4 py-3 text-center text-base font-bold text-black dark:text-white rounded-tr-2xl">Action</th>
+                        </tr>
+                      </thead>
+                      <AnimatePresence mode="wait">
+                        <motion.tbody
+                          key={currentPage + '-' + search + '-ot'}
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -30 }}
+                          transition={{ duration: 0.4, type: "spring", stiffness: 80, damping: 18 }}
+                        >
+                          {paginatedTickets.map((ticket, idx) => (
+                            <tr key={ticket.ticketNo} className={idx % 2 === 0 ? "bg-neutral-50 dark:bg-neutral-800" : "bg-white dark:bg-neutral-900"}>
+                              <td
+                                className="px-4 py-3 text-blue-700 underline cursor-pointer hover:text-blue-900 transition font-semibold"
+                                onClick={() => { setSelectedTicket(ticket); setModalOpen(true); }}
+                              >
+                                {ticket.ticketNo}
+                              </td>
+                              <td className="px-4 py-3 text-black dark:text-white font-medium">{ticket.subject}</td>
+                              <td className="px-4 py-3 text-black dark:text-white font-medium">{ticket.category || "Access issue"}</td>
+                              <td className="px-4 py-3 text-black dark:text-white font-medium">{ticket.priority || ["High","Medium","Low"][idx%3]}</td>
+                              <td className="px-4 py-3 text-black dark:text-white font-medium">{ticket.date}</td>
+                              <td className="px-4 py-3">
+                                <span className={`px-3 py-1 rounded-full font-semibold text-sm ${ticket.status.color}`}>{ticket.status.label}</span>
+                              </td>
+                              <td className="px-4 py-3 text-black dark:text-white font-medium">{ticket.supportedBy}</td>
+                              <td className="px-4 py-3 text-center flex items-center gap-3 justify-center">
+                                <button className="hover:text-blue-600" title="Edit Ticket" onClick={() => { setEditTicket(ticket); setEditModalOpen(true); }}><FaEdit /></button>
+                                <button className="hover:text-green-600" title="Create Team" onClick={() => { setCreateTeamTicket(ticket); setCreateTeamModalOpen(true); }}><FaUsers /></button>
+                                <button className="hover:text-gray-700" title="Download" onClick={() => handleDownload(ticket)}><FaDownload /></button>
+                              </td>
+                            </tr>
+                          ))}
+                        </motion.tbody>
+                      </AnimatePresence>
+                    </table>
+                  </div>
+                  <div className="mt-2 text-sm text-black dark:text-white text-center">Showing 1 to 5 of 5 entries</div>
+                </div>
               )}
             </AnimatePresence>
           </main>
