@@ -5,8 +5,9 @@ import Footer from "./Footer";
 import DashboardCard from "./DashboardCard";
 import { Card, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChartBar, FaStar, FaRegStar, FaStarHalfAlt, FaUserFriends, FaTicketAlt, FaCheckCircle, FaHourglassHalf, FaSpinner, FaSearch, FaClipboardList, FaUser, FaPhone, FaEnvelope, FaBuilding, FaUserEdit, FaUpload, FaEdit, FaUsers, FaDownload, FaPlus, FaSyncAlt, FaChartLine, FaDatabase, FaTrash } from "react-icons/fa";
+import { FaChartBar, FaStar, FaRegStar, FaStarHalfAlt, FaUserFriends, FaTicketAlt, FaCheckCircle, FaHourglassHalf, FaSpinner, FaSearch, FaClipboardList, FaUser, FaPhone, FaEnvelope, FaBuilding, FaUserEdit, FaUpload, FaEdit, FaUsers, FaDownload, FaPlus, FaSyncAlt, FaChartLine, FaDatabase, FaTrash, FaChevronDown, FaCheck, FaChevronRight } from "react-icons/fa";
 import CreateTicketForm from "./CreateTicketForm";
+import { toast } from "react-hot-toast";
 
 const cardMotion = {
   initial: { opacity: 0, y: 30 },
@@ -313,6 +314,16 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
   ]);
   const [userEditIdx, setUserEditIdx] = useState(null);
   const [userDeleteIdx, setUserDeleteIdx] = useState(null);
+  const [settingsAccordion, setSettingsAccordion] = useState({
+    general: true,
+    connect: false,
+    email: false,
+    authorization: false,
+    notification: false,
+  });
+  const [lang, setLang] = useState("BM");
+  const [authLevel, setAuthLevel] = useState("BI");
+  const toggleAccordion = (key) => setSettingsAccordion((prev) => ({ ...prev, [key]: !prev[key] }));
 
   useEffect(() => {
     const checkMobile = () => {
@@ -408,6 +419,31 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
   );
   const userTotalPages = Math.ceil(filteredUserTable.length / userRowsPerPage);
   const paginatedUserTable = filteredUserTable.slice((userCurrentPage - 1) * userRowsPerPage, userCurrentPage * userRowsPerPage);
+
+  const handleSettingAction = (action) => {
+    switch(action) {
+      case 'backup':
+        toast.success('Data backup started!');
+        break;
+      case 'godash':
+        toast.success('GoDash connected!');
+        break;
+      case 'supercontroller':
+        toast.success('SuperController connected!');
+        break;
+      case 'smtp':
+        toast.success('SMTP enabled!');
+        break;
+      case 'edit-auth':
+        toast.success('Authorization edited!');
+        break;
+      case 'notification':
+        toast.success('Notification enabled!');
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-100 via-teal-50 to-green-100 dark:bg-gradient-to-br dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 transition-colors">
@@ -1037,6 +1073,156 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                     </table>
                   </div>
                   <div className="mt-2 text-sm text-black dark:text-white text-center">Showing {paginatedUserTable.length} of {filteredUserTable.length} entries (Page {userCurrentPage} of {userTotalPages})</div>
+                </motion.div>
+              )}
+              {view === "setting" && profile === "Admin" && (
+                <motion.div
+                  key="setting-admin"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -30 }}
+                  transition={{ type: "spring", stiffness: 120, damping: 18 }}
+                  className="w-full"
+                >
+                  <h2 className="text-3xl font-bold mb-8 text-black dark:text-white font-[Poppins] text-left">Setting</h2>
+                  <div className="space-y-4">
+                    {/* General */}
+                    <div className="rounded-xl overflow-hidden shadow-lg">
+                      <button onClick={() => toggleAccordion('general')} className="w-full flex items-center justify-between px-6 py-3 bg-teal-400 text-white font-bold text-lg focus:outline-none">
+                        General
+                        <FaChevronDown className={`ml-2 transition-transform ${settingsAccordion.general ? 'rotate-180' : ''}`} />
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {settingsAccordion.general && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="bg-neutral-100 dark:bg-neutral-800 divide-y divide-neutral-200 dark:divide-neutral-700"
+                          >
+                            <div className="flex items-center justify-between px-8 py-4">
+                              <span className="text-black dark:text-white">Language</span>
+                              <div className="flex gap-2">
+                                <button onClick={() => { setLang('BM'); toast.success('Language set to BM'); }} className={`px-2 py-1 rounded bg-black text-white text-xs font-bold ${lang === 'BM' ? 'opacity-100' : 'opacity-60'}`}>BM</button>
+                                <button onClick={() => { setLang('BI'); toast.success('Language set to BI'); }} className={`px-2 py-1 rounded bg-black text-white text-xs font-bold ${lang === 'BI' ? 'opacity-100' : 'opacity-60'}`}>BI</button>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between px-8 py-4">
+                              <span className="text-black dark:text-white">Data Backup</span>
+                              <button onClick={() => handleSettingAction('backup')} className="focus:outline-none"><FaCheck className="text-black dark:text-white" /></button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                    {/* Connect To */}
+                    <div className="rounded-xl overflow-hidden shadow-lg">
+                      <button onClick={() => toggleAccordion('connect')} className="w-full flex items-center justify-between px-6 py-3 bg-teal-400 text-white font-bold text-lg focus:outline-none">
+                        Connect To
+                        <FaChevronDown className={`ml-2 transition-transform ${settingsAccordion.connect ? 'rotate-180' : ''}`} />
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {settingsAccordion.connect && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="bg-neutral-100 dark:bg-neutral-800 divide-y divide-neutral-200 dark:divide-neutral-700"
+                          >
+                            <div className="flex items-center justify-between px-8 py-4">
+                              <span className="text-black dark:text-white">GoDash</span>
+                              <button onClick={() => handleSettingAction('godash')} className="focus:outline-none"><FaCheck className="text-black dark:text-white" /></button>
+                            </div>
+                            <div className="flex items-center justify-between px-8 py-4">
+                              <span className="text-black dark:text-white">SuperController</span>
+                              <button onClick={() => handleSettingAction('supercontroller')} className="focus:outline-none"><FaCheck className="text-black dark:text-white" /></button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                    {/* Email */}
+                    <div className="rounded-xl overflow-hidden shadow-lg">
+                      <button onClick={() => toggleAccordion('email')} className="w-full flex items-center justify-between px-6 py-3 bg-teal-400 text-white font-bold text-lg focus:outline-none">
+                        Email
+                        <FaChevronDown className={`ml-2 transition-transform ${settingsAccordion.email ? 'rotate-180' : ''}`} />
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {settingsAccordion.email && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="bg-neutral-100 dark:bg-neutral-800 divide-y divide-neutral-200 dark:divide-neutral-700"
+                          >
+                            <div className="flex items-center justify-between px-8 py-4">
+                              <span className="text-black dark:text-white">Enable SMTP</span>
+                              <button onClick={() => handleSettingAction('smtp')} className="focus:outline-none"><FaCheck className="text-black dark:text-white" /></button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                    {/* Authorization */}
+                    <div className="rounded-xl overflow-hidden shadow-lg">
+                      <button onClick={() => toggleAccordion('authorization')} className="w-full flex items-center justify-between px-6 py-3 bg-teal-400 text-white font-bold text-lg focus:outline-none">
+                        Authorization
+                        <FaChevronDown className={`ml-2 transition-transform ${settingsAccordion.authorization ? 'rotate-180' : ''}`} />
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {settingsAccordion.authorization && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="bg-neutral-100 dark:bg-neutral-800 divide-y divide-neutral-200 dark:divide-neutral-700"
+                          >
+                            <div className="flex items-center justify-between px-8 py-4">
+                              <span className="text-black dark:text-white">Edit authorization</span>
+                              <button onClick={() => handleSettingAction('edit-auth')} className="focus:outline-none"><FaCheck className="text-black dark:text-white" /></button>
+                            </div>
+                            <div className="flex items-center justify-between px-8 py-4">
+                              <span className="text-black dark:text-white">Authority Level</span>
+                              <div className="relative">
+                                <select value={authLevel} onChange={e => { setAuthLevel(e.target.value); toast.success('Authority Level set to ' + e.target.value); }} className="rounded bg-neutral-300 dark:bg-neutral-700 px-4 py-1 focus:outline-none">
+                                  <option value="BM">BM</option>
+                                  <option value="BI">BI</option>
+                                </select>
+                                <FaChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" />
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                    {/* Notification */}
+                    <div className="rounded-xl overflow-hidden shadow-lg">
+                      <button onClick={() => toggleAccordion('notification')} className="w-full flex items-center justify-between px-6 py-3 bg-teal-400 text-white font-bold text-lg focus:outline-none">
+                        Notification
+                        <FaChevronDown className={`ml-2 transition-transform ${settingsAccordion.notification ? 'rotate-180' : ''}`} />
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {settingsAccordion.notification && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="bg-neutral-100 dark:bg-neutral-800 divide-y divide-neutral-200 dark:divide-neutral-700"
+                          >
+                            <div className="flex items-center justify-between px-8 py-4">
+                              <span className="text-black dark:text-white">Enable Notification</span>
+                              <button onClick={() => handleSettingAction('notification')} className="focus:outline-none"><FaCheck className="text-black dark:text-white" /></button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
