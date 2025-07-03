@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaTachometerAlt, FaTicketAlt, FaClipboardList, FaCheckCircle, FaChartLine, FaTimes, FaDatabase, FaCog, FaHistory, FaUser, FaUsers, FaHeadset } from "react-icons/fa";
+import { FaTachometerAlt, FaTicketAlt, FaClipboardList, FaCheckCircle, FaChartLine, FaTimes, FaDatabase, FaCog, FaHistory, FaUser, FaUsers, FaHeadset, FaLifeRing } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const Sidebar = ({ profile, setSidebarOpen, onNavigate }) => {
@@ -55,7 +55,10 @@ const Sidebar = ({ profile, setSidebarOpen, onNavigate }) => {
       >
         <FaTimes />
       </button>
-      <h1 className="text-2xl font-extrabold font-[Poppins] text-center text-black dark:text-white tracking-tight mb-8">Helpdesk</h1>
+      <div className="flex items-center gap-3 text-3xl font-extrabold text-teal-500 mb-10 tracking-tight font-[Poppins]">
+        <FaLifeRing className="text-4xl" />
+        Helpdesk
+      </div>
       <div className="space-y-6 w-full">
         {items.map((item) => (
           <div key={item.label}>

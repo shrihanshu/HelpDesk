@@ -5,7 +5,7 @@ import Footer from "./Footer";
 import DashboardCard from "./DashboardCard";
 import { Card, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChartBar, FaStar, FaRegStar, FaStarHalfAlt, FaUserFriends, FaTicketAlt, FaCheckCircle, FaHourglassHalf, FaSpinner, FaSearch, FaClipboardList, FaUser, FaPhone, FaEnvelope, FaBuilding, FaUserEdit, FaUpload, FaEdit, FaUsers, FaDownload, FaPlus, FaSyncAlt, FaChartLine, FaDatabase, FaTrash, FaChevronDown, FaCheck, FaChevronRight } from "react-icons/fa";
+import { FaChartBar, FaStar, FaRegStar, FaStarHalfAlt, FaUserFriends, FaTicketAlt, FaCheckCircle, FaHourglassHalf, FaSpinner, FaSearch, FaClipboardList, FaUser, FaPhone, FaEnvelope, FaBuilding, FaUserEdit, FaUpload, FaEdit, FaUsers, FaDownload, FaPlus, FaSyncAlt, FaChartLine, FaDatabase, FaTrash, FaChevronDown, FaCheck, FaChevronRight, FaFileAlt } from "react-icons/fa";
 import CreateTicketForm from "./CreateTicketForm";
 import { toast } from "react-hot-toast";
 
@@ -445,6 +445,34 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
     }
   };
 
+  // Generate 15 random log entries for 3 pages
+  const randomDepts = ["OT", "IT", "HR", "TS"];
+  const randomActs = ["Create Team", "Login", "Logout", "Edit Profile", "Reset Password", "Approve Ticket", "Close Ticket"];
+  function randomDateTime(idx) {
+    const base = 130821;
+    const inTime = 800 + (idx * 5);
+    const outTime = inTime + 15;
+    return {
+      signIn: `${base} / ${inTime}`,
+      signOut: `${base} / ${outTime}`
+    };
+  }
+  const userLogHistoryData = Array.from({ length: 15 }, (_, i) => {
+    const dt = randomDateTime(i);
+    return {
+      no: i + 1,
+      signIn: dt.signIn,
+      staffId: `XL${String(100000 + i).padStart(6, '0')}`,
+      dept: randomDepts[i % randomDepts.length],
+      activity: randomActs[i % randomActs.length],
+      signOut: dt.signOut
+    };
+  });
+  const [logEntriesPerPage, setLogEntriesPerPage] = useState(10);
+  const [logCurrentPage, setLogCurrentPage] = useState(1);
+  const logTotalPages = Math.ceil(userLogHistoryData.length / logEntriesPerPage);
+  const paginatedLogHistory = userLogHistoryData.slice((logCurrentPage - 1) * logEntriesPerPage, logCurrentPage * logEntriesPerPage);
+
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-100 via-teal-50 to-green-100 dark:bg-gradient-to-br dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 transition-colors">
       <div className="flex flex-1 relative">
@@ -463,239 +491,230 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
           <main className="flex-1 p-6 space-y-6">
             <AnimatePresence mode="wait">
               {view === "dashboard" && (
-                <motion.div
-                  key={`dashboard-${profile}`}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -30 }}
-                  transition={{ type: "spring", stiffness: 120, damping: 18 }}
-                >
-                  {/* Dashboard Title */}
-                  <h2 className="text-xl font-semibold mb-4 text-black dark:text-white">Dashboard</h2>
-
-                  {/* User profile: Only show top 4 cards */}
-                  {profile === "User" ? (
-                    <>
-                      <div className="flex flex-wrap gap-6 justify-center">
-                        <DashboardCard
-                          title="Total Tickets"
-                          value={12}
-                          bgColor="bg-blue-500 dark:bg-blue-800"
-                          textColor="text-white"
-                          icon={FaTicketAlt}
-                          iconBg="bg-blue-700/80 dark:bg-blue-900/80"
-                          iconColor="text-blue-200"
-                          numberColor="text-blue-100"
-                        />
-                        <DashboardCard
-                          title="Total Solved"
-                          value={8}
-                          bgColor="bg-green-500 dark:bg-green-800"
-                          textColor="text-white"
-                          icon={FaCheckCircle}
-                          iconBg="bg-green-700/80 dark:bg-green-900/80"
-                          iconColor="text-green-200"
-                          numberColor="text-green-100"
-                        />
-                        <DashboardCard
-                          title="Total Awaiting Approval"
-                          value={2}
-                          bgColor="bg-orange-500 dark:bg-orange-700"
-                          textColor="text-white"
-                          icon={FaHourglassHalf}
-                          iconBg="bg-orange-700/80 dark:bg-orange-900/80"
-                          iconColor="text-orange-200"
-                          numberColor="text-orange-100"
-                        />
-                        <DashboardCard
-                          title="Total in Progress"
-                          value={2}
-                          bgColor="bg-yellow-400 dark:bg-yellow-600"
-                          textColor="text-black"
-                          icon={FaSpinner}
-                          iconBg="bg-yellow-600/80 dark:bg-yellow-800/80"
-                          iconColor="text-yellow-100"
-                          numberColor="text-yellow-100"
-                        />
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                        {/* User Profile Card Trigger */}
+                profile === "User" ? (
+                  <motion.div
+                    key="dashboard-user"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -30 }}
+                    transition={{ type: "spring", stiffness: 120, damping: 18 }}
+                  >
+                    {/* Dashboard Title */}
+                    <h2 className="text-xl font-semibold mb-4 text-black dark:text-white">Dashboard</h2>
+                    {/* Four top cards */}
+                    <div className="flex flex-wrap gap-6 justify-center mb-8">
+                      <DashboardCard
+                        title="Total Tickets"
+                        value={12}
+                        bgColor="bg-blue-500 dark:bg-blue-800"
+                        textColor="text-white"
+                        icon={FaTicketAlt}
+                        iconBg="bg-blue-700/80 dark:bg-blue-900/80"
+                        iconColor="text-blue-200"
+                        numberColor="text-blue-100"
+                      />
+                      <DashboardCard
+                        title="Total Solved"
+                        value={8}
+                        bgColor="bg-green-500 dark:bg-green-800"
+                        textColor="text-white"
+                        icon={FaCheckCircle}
+                        iconBg="bg-green-700/80 dark:bg-green-900/80"
+                        iconColor="text-green-200"
+                        numberColor="text-green-100"
+                      />
+                      <DashboardCard
+                        title="Total Awaiting Approval"
+                        value={2}
+                        bgColor="bg-orange-500 dark:bg-orange-700"
+                        textColor="text-white"
+                        icon={FaHourglassHalf}
+                        iconBg="bg-orange-700/80 dark:bg-orange-900/80"
+                        iconColor="text-orange-200"
+                        numberColor="text-orange-100"
+                      />
+                      <DashboardCard
+                        title="Total in Progress"
+                        value={2}
+                        bgColor="bg-yellow-400 dark:bg-yellow-600"
+                        textColor="text-black"
+                        icon={FaSpinner}
+                        iconBg="bg-yellow-600/80 dark:bg-yellow-800/80"
+                        iconColor="text-yellow-100"
+                        numberColor="text-yellow-100"
+                      />
+                    </div>
+                    {/* User Profile and Give Feedback cards */}
+                    <div className="flex flex-col md:flex-row gap-6 justify-center mb-8">
+                      {/* User Profile Card */}
+                      <motion.div {...cardMotion} className="flex-1 min-w-[320px]">
                         <Card
-                          className="rounded-2xl p-6 shadow-lg bg-gradient-to-br from-blue-100 to-blue-300 dark:from-blue-900 dark:to-blue-700 flex flex-col gap-4 cursor-pointer hover:scale-105 transition-transform"
+                          className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-300 dark:from-blue-900 dark:to-blue-700 rounded-2xl p-6 shadow-lg cursor-pointer transition-transform duration-200 hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30"
                           onClick={() => setProfileModalOpen(true)}
                         >
-                          <h3 className="text-xl font-bold mb-2 text-black dark:text-white flex items-center gap-2"><FaUser /> User Profile</h3>
-                          <div className="flex flex-col gap-2 text-black dark:text-white opacity-60 text-base">
-                            <span>Click to view profile details</span>
-                          </div>
+                          <h3 className="font-bold text-xl mb-2 flex items-center gap-2 text-black dark:text-white">
+                            <FaUser className="text-2xl" /> User Profile
+                          </h3>
+                          <p className="text-black dark:text-white text-base">Click to view profile details</p>
                         </Card>
-                        {/* Feedback Card Trigger */}
+                      </motion.div>
+                      {/* Give Feedback Card */}
+                      <motion.div {...cardMotion} className="flex-1 min-w-[320px]">
                         <Card
-                          className="rounded-2xl p-6 shadow-lg bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-yellow-700 dark:to-yellow-900 flex flex-col gap-4 cursor-pointer hover:scale-105 transition-transform"
+                          className="w-full h-full bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-yellow-700 dark:to-yellow-900 rounded-2xl p-6 shadow-lg cursor-pointer transition-transform duration-200 hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30"
                           onClick={() => setFeedbackModalOpen(true)}
                         >
-                          <h3 className="text-xl font-bold mb-2 text-black dark:text-white flex items-center gap-2"><FaStar className="text-yellow-400" /> Give Feedback</h3>
-                          <div className="flex flex-col gap-2 text-black dark:text-white opacity-60 text-base">
-                            <span>Click to give feedback and rating</span>
+                          <h3 className="font-bold text-xl mb-2 flex items-center gap-2 text-black dark:text-white">
+                            <FaStar className="text-yellow-500 text-2xl" /> Give Feedback
+                          </h3>
+                          <p className="text-black dark:text-white text-base">Click to give feedback and rating</p>
+                        </Card>
+                      </motion.div>
+                    </div>
+                    {/* User Setting Button */}
+                    <div className="flex justify-center mb-8">
+                      <button
+                        className="px-8 py-3 rounded-lg bg-teal-400 hover:bg-teal-500 text-white font-bold text-lg shadow-md transition-all focus:outline-none focus:ring-2 focus:ring-teal-400 flex items-center gap-2"
+                        onClick={() => setShowProfileSetting(true)}
+                      >
+                        <FaUserEdit /> User Setting
+                      </button>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key={`dashboard-${profile}`}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -30 }}
+                    transition={{ type: "spring", stiffness: 120, damping: 18 }}
+                  >
+                    {/* Dashboard Title */}
+                    <h2 className="text-xl font-semibold mb-4 text-black dark:text-white">Dashboard</h2>
+
+                    {/* Show all dashboard cards for all profiles */}
+                    <div className="flex flex-wrap gap-6 justify-center">
+                      <DashboardCard
+                        title="Total Tickets"
+                        value={12}
+                        bgColor="bg-blue-500 dark:bg-blue-800"
+                        textColor="text-white"
+                        icon={FaTicketAlt}
+                        iconBg="bg-blue-700/80 dark:bg-blue-900/80"
+                        iconColor="text-blue-200"
+                        numberColor="text-blue-100"
+                      />
+                      <DashboardCard
+                        title="Total Solved"
+                        value={8}
+                        bgColor="bg-green-500 dark:bg-green-800"
+                        textColor="text-white"
+                        icon={FaCheckCircle}
+                        iconBg="bg-green-700/80 dark:bg-green-900/80"
+                        iconColor="text-green-200"
+                        numberColor="text-green-100"
+                      />
+                      <DashboardCard
+                        title="Total Awaiting Approval"
+                        value={2}
+                        bgColor="bg-orange-500 dark:bg-orange-700"
+                        textColor="text-white"
+                        icon={FaHourglassHalf}
+                        iconBg="bg-orange-700/80 dark:bg-orange-900/80"
+                        iconColor="text-orange-200"
+                        numberColor="text-orange-100"
+                      />
+                      <DashboardCard
+                        title="Total in Progress"
+                        value={2}
+                        bgColor="bg-yellow-400 dark:bg-yellow-600"
+                        textColor="text-black"
+                        icon={FaSpinner}
+                        iconBg="bg-yellow-600/80 dark:bg-yellow-800/80"
+                        iconColor="text-yellow-100"
+                        numberColor="text-yellow-100"
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                      {/* Chart area */}
+                      <motion.div {...cardMotion} className="w-full h-full">
+                        <Card className="bg-gradient-to-br from-blue-200 to-blue-400 dark:from-blue-900 dark:to-blue-700 rounded-2xl p-8 flex items-center justify-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
+                          <FaChartBar size={100} className="text-blue-900 dark:text-blue-200" />
+                        </Card>
+                      </motion.div>
+                      {/* Team Stats + Feedback */}
+                      <div className="space-y-4">
+                        <motion.div {...cardMotion} className="w-full h-full">
+                          <Card className="bg-gradient-to-br from-teal-200 to-teal-400 dark:from-teal-900 dark:to-teal-700 rounded-2xl p-6 text-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
+                            <div className="flex justify-around items-center">
+                              <div>
+                                <img
+                                  src="https://img.icons8.com/ios-filled/100/000000/technical-support.png"
+                                  alt="Tech Support"
+                                  className="mx-auto mb-2 w-12"
+                                />
+                                <div className="text-lg font-bold text-black dark:text-white">3</div>
+                                <p className="text-sm text-black dark:text-white">Technical Supports</p>
+                              </div>
+                              <div>
+                                <img
+                                  src="https://img.icons8.com/ios-filled/100/000000/administrator-male.png"
+                                  alt="Operations"
+                                  className="mx-auto mb-2 w-12"
+                                />
+                                <div className="text-lg font-bold text-black dark:text-white">4</div>
+                                <p className="text-sm text-black dark:text-white">Operation Team</p>
+                              </div>
+                            </div>
+                          </Card>
+                        </motion.div>
+                      </div>
+                    </div>
+                    {/* Customer Feedback and Customers Section Side by Side */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                      {/* Customer Feedback */}
+                      <motion.div {...cardMotion} className="h-full">
+                        <Card className="w-full h-full bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-yellow-700 dark:to-yellow-900 rounded-2xl p-4 text-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
+                          <h3 className="font-semibold mb-2 text-black dark:text-white">Customer Feedback</h3>
+                          <div className="flex justify-center text-yellow-400 text-xl space-x-1">
+                            <FaStar />
+                            <FaStar />
+                            <FaStar />
+                            <FaStarHalfAlt />
+                            <FaRegStar />
                           </div>
                         </Card>
-                      </div>
-                      <ProfileModal open={profileModalOpen} onClose={() => setProfileModalOpen(false)} userProfile={userProfile} submittedFeedback={submittedFeedback} />
-                      <FeedbackModal
-                        open={feedbackModalOpen}
-                        onClose={() => setFeedbackModalOpen(false)}
-                        feedbackText={feedbackText}
-                        setFeedbackText={setFeedbackText}
-                        feedbackRating={feedbackRating}
-                        setFeedbackRating={setFeedbackRating}
-                        feedbackHover={feedbackHover}
-                        setFeedbackHover={setFeedbackHover}
-                        handleFeedbackSubmit={handleFeedbackSubmit}
-                        feedbackSubmitted={feedbackSubmitted}
-                      />
-                      <div className="flex justify-center mt-12">
-                        <button
-                          className="px-6 py-2 rounded-lg bg-teal-400 text-white font-semibold text-lg shadow hover:bg-teal-500 transition flex items-center gap-2"
-                          type="button"
-                          onClick={() => setShowProfileSetting(true)}
-                        >
-                          <FaUserEdit /> User Setting
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      {/* Top Cards */}
-                      <div className="flex flex-wrap gap-6 justify-center">
-                        <DashboardCard
-                          title="Total Tickets"
-                          value={12}
-                          bgColor="bg-blue-500 dark:bg-blue-800"
-                          textColor="text-white"
-                          icon={FaTicketAlt}
-                          iconBg="bg-blue-700/80 dark:bg-blue-900/80"
-                          iconColor="text-blue-200"
-                          numberColor="text-blue-100"
-                        />
-                        <DashboardCard
-                          title="Total Solved"
-                          value={8}
-                          bgColor="bg-green-500 dark:bg-green-800"
-                          textColor="text-white"
-                          icon={FaCheckCircle}
-                          iconBg="bg-green-700/80 dark:bg-green-900/80"
-                          iconColor="text-green-200"
-                          numberColor="text-green-100"
-                        />
-                        <DashboardCard
-                          title="Total Awaiting Approval"
-                          value={2}
-                          bgColor="bg-orange-500 dark:bg-orange-700"
-                          textColor="text-white"
-                          icon={FaHourglassHalf}
-                          iconBg="bg-orange-700/80 dark:bg-orange-900/80"
-                          iconColor="text-orange-200"
-                          numberColor="text-orange-100"
-                        />
-                        <DashboardCard
-                          title="Total in Progress"
-                          value={2}
-                          bgColor="bg-yellow-400 dark:bg-yellow-600"
-                          textColor="text-black"
-                          icon={FaSpinner}
-                          iconBg="bg-yellow-600/80 dark:bg-yellow-800/80"
-                          iconColor="text-yellow-100"
-                          numberColor="text-yellow-100"
-                        />
-                      </div>
-
-                      {/* Add extra margin here for separation */}
-                      <div className="my-8" />
-
-                      {/* Chart + Team Info */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Chart area */}
-                        <motion.div {...cardMotion} className="w-full h-full">
-                          <Card className="bg-gradient-to-br from-blue-200 to-blue-400 dark:from-blue-900 dark:to-blue-700 rounded-2xl p-8 flex items-center justify-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
-                            <FaChartBar size={100} className="text-blue-900 dark:text-blue-200" />
-                          </Card>
-                        </motion.div>
-
-                        {/* Team Stats + Feedback */}
-                        <div className="space-y-4">
-                          <motion.div {...cardMotion} className="w-full h-full">
-                            <Card className="bg-gradient-to-br from-teal-200 to-teal-400 dark:from-teal-900 dark:to-teal-700 rounded-2xl p-6 text-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
-                              <div className="flex justify-around items-center">
-                                <div>
-                                  <img
-                                    src="https://img.icons8.com/ios-filled/100/000000/technical-support.png"
-                                    alt="Tech Support"
-                                    className="mx-auto mb-2 w-12"
-                                  />
-                                  <div className="text-lg font-bold text-black dark:text-white">3</div>
-                                  <p className="text-sm text-black dark:text-white">Technical Supports</p>
-                                </div>
-                                <div>
-                                  <img
-                                    src="https://img.icons8.com/ios-filled/100/000000/administrator-male.png"
-                                    alt="Operations"
-                                    className="mx-auto mb-2 w-12"
-                                  />
-                                  <div className="text-lg font-bold text-black dark:text-white">4</div>
-                                  <p className="text-sm text-black dark:text-white">Operation Team</p>
-                                </div>
-                              </div>
-                            </Card>
-                          </motion.div>
-                        </div>
-                      </div>
-
-                      {/* Customer Feedback and Customers Section Side by Side */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Customer Feedback */}
-                        <motion.div {...cardMotion} className="h-full">
-                          <Card className="w-full h-full bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-yellow-700 dark:to-yellow-900 rounded-2xl p-4 text-center shadow-lg transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
-                            <h3 className="font-semibold mb-2 text-black dark:text-white">Customer Feedback</h3>
-                            <div className="flex justify-center text-yellow-400 text-xl space-x-1">
-                              <FaStar />
-                              <FaStar />
-                              <FaStar />
-                              <FaStarHalfAlt />
-                              <FaRegStar />
+                      </motion.div>
+                      {/* Customers */}
+                      <motion.div {...cardMotion} className="h-full">
+                        <Card className="w-full h-full bg-gradient-to-br from-pink-200 to-pink-400 dark:from-pink-900 dark:to-pink-700 rounded-2xl p-6 shadow-lg flex flex-col items-center transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
+                          <div className="flex items-center gap-4 mb-4">
+                            <FaUserFriends className="text-4xl text-pink-700 dark:text-pink-200" />
+                            <CardTitle className="text-2xl font-bold text-black dark:text-white">Customers</CardTitle>
+                          </div>
+                          <div className="flex gap-8">
+                            <div className="text-center">
+                              <div className="text-3xl font-extrabold text-black dark:text-white">120</div>
+                              <div className="text-sm text-black dark:text-white">Total Customers</div>
                             </div>
-                          </Card>
-                        </motion.div>
-                        {/* Customers */}
-                        <motion.div {...cardMotion} className="h-full">
-                          <Card className="w-full h-full bg-gradient-to-br from-pink-200 to-pink-400 dark:from-pink-900 dark:to-pink-700 rounded-2xl p-6 shadow-lg flex flex-col items-center transition-transform duration-200 cursor-pointer hover:scale-105 hover:shadow-2xl hover:ring-2 hover:ring-black/20 dark:hover:ring-white/30">
-                            <div className="flex items-center gap-4 mb-4">
-                              <FaUserFriends className="text-4xl text-pink-700 dark:text-pink-200" />
-                              <CardTitle className="text-2xl font-bold text-black dark:text-white">Customers</CardTitle>
+                            <div className="text-center">
+                              <div className="text-3xl font-extrabold text-black dark:text-white">5</div>
+                              <div className="text-sm text-black dark:text-white">New This Week</div>
                             </div>
-                            <div className="flex gap-8">
-                              <div className="text-center">
-                                <div className="text-3xl font-extrabold text-black dark:text-white">120</div>
-                                <div className="text-sm text-black dark:text-white">Total Customers</div>
-                              </div>
-                              <div className="text-center">
-                                <div className="text-3xl font-extrabold text-black dark:text-white">5</div>
-                                <div className="text-sm text-black dark:text-white">New This Week</div>
-                              </div>
-                            </div>
-                            {/* Example avatars */}
-                            <div className="flex mt-6 gap-2">
-                              <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
-                              <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
-                              <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
-                              <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
-                              <span className="w-10 h-10 flex items-center justify-center rounded-full bg-pink-300 dark:bg-pink-800 text-black dark:text-white font-bold border-2 border-white dark:border-neutral-700">+8</span>
-                            </div>
-                          </Card>
-                        </motion.div>
-                      </div>
-                    </>
-                  )}
-                </motion.div>
+                          </div>
+                          {/* Example avatars */}
+                          <div className="flex mt-6 gap-2">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
+                            <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
+                            <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Customer" className="w-10 h-10 rounded-full border-2 border-white dark:border-neutral-700" />
+                            <span className="w-10 h-10 flex items-center justify-center rounded-full bg-pink-300 dark:bg-pink-800 text-black dark:text-white font-bold border-2 border-white dark:border-neutral-700">+8</span>
+                          </div>
+                        </Card>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                )
               )}
               {view === "new-ticket" && profile === "User" && (
                 <CreateTicketForm key="new-ticket" onBack={() => setView("dashboard")} />
@@ -1225,12 +1244,87 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                   </div>
                 </motion.div>
               )}
+              {view === "user-log-history" && profile === "Admin" && (
+                <motion.div
+                  key="user-log-history"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -30 }}
+                  transition={{ type: "spring", stiffness: 120, damping: 18 }}
+                  className="w-full"
+                >
+                  <div className="flex justify-center w-full">
+                    <h2 className="text-3xl font-bold mb-8 text-black dark:text-white font-[Poppins] flex items-center gap-3">
+                      <FaFileAlt className="text-teal-600 dark:text-teal-300 text-2xl" />
+                      User Log History
+                    </h2>
+                  </div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-black dark:text-white">Show:</span>
+                    <select
+                      value={logEntriesPerPage}
+                      onChange={e => { setLogEntriesPerPage(Number(e.target.value)); setLogCurrentPage(1); }}
+                      className="rounded border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-2 py-1 text-black dark:text-white"
+                    >
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                    </select>
+                    <span className="text-black dark:text-white">Entries</span>
+                  </div>
+                  <div className="overflow-x-auto rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700">
+                    <table className="min-w-full bg-white dark:bg-neutral-900">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-teal-100 to-blue-100 dark:from-teal-900 dark:to-blue-900">
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white rounded-tl-2xl">No.</th>
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white">Date/Sign InTime</th>
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white">Staff ID</th>
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white">Department</th>
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white">Activity</th>
+                          <th className="px-6 py-4 text-left text-base font-bold text-black dark:text-white rounded-tr-2xl">Date/Sign Out time</th>
+                        </tr>
+                      </thead>
+                      <AnimatePresence mode="wait">
+                        <motion.tbody
+                          key={logCurrentPage + '-' + logEntriesPerPage}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3, type: "spring", stiffness: 100 }}
+                        >
+                          {paginatedLogHistory.map((row, idx) => (
+                            <tr key={row.no} className={idx % 2 === 0 ? "bg-neutral-50 dark:bg-neutral-800" : "bg-white dark:bg-neutral-900"}>
+                              <td className="px-6 py-3 text-black dark:text-white font-semibold">{row.no}.</td>
+                              <td className="px-6 py-3 text-black dark:text-white font-medium">{row.signIn}</td>
+                              <td className="px-6 py-3 text-black dark:text-white font-medium">{row.staffId}</td>
+                              <td className="px-6 py-3 text-black dark:text-white font-medium">{row.dept}</td>
+                              <td className="px-6 py-3 text-black dark:text-white font-medium">{row.activity}</td>
+                              <td className="px-6 py-3 text-black dark:text-white font-medium">{row.signOut}</td>
+                            </tr>
+                          ))}
+                        </motion.tbody>
+                      </AnimatePresence>
+                    </table>
+                  </div>
+                  <div className="mt-2 text-sm text-black dark:text-white text-center">Showing {(logCurrentPage - 1) * logEntriesPerPage + 1} to {Math.min(logCurrentPage * logEntriesPerPage, userLogHistoryData.length)} of {userLogHistoryData.length} entries</div>
+                  <div className="flex justify-end items-center gap-2 mt-2 text-black dark:text-white text-sm">
+                    <button onClick={() => setLogCurrentPage(1)} disabled={logCurrentPage === 1} className="px-2 py-1 rounded disabled:opacity-50">&laquo;</button>
+                    {Array.from({ length: logTotalPages }, (_, i) => (
+                      <button key={i+1} onClick={() => setLogCurrentPage(i+1)} className={`px-2 py-1 rounded ${logCurrentPage === i+1 ? 'bg-teal-400 text-white' : ''}`}>{i+1}</button>
+                    ))}
+                    <button onClick={() => setLogCurrentPage(logTotalPages)} disabled={logCurrentPage === logTotalPages} className="px-2 py-1 rounded disabled:opacity-50">&raquo;</button>
+                  </div>
+                </motion.div>
+              )}
             </AnimatePresence>
           </main>
           <Footer />
         </div>
       </div>
       <AppTicketModal ticket={selectedTicket} open={modalOpen} onClose={() => setModalOpen(false)} />
+      {/* Always render ProfileModal and FeedbackModal for user dashboard functionality */}
+      <ProfileModal open={profileModalOpen} onClose={() => setProfileModalOpen(false)} userProfile={userProfile} submittedFeedback={submittedFeedback} />
+      <FeedbackModal open={feedbackModalOpen} onClose={() => setFeedbackModalOpen(false)} feedbackText={feedbackText} setFeedbackText={setFeedbackText} feedbackRating={feedbackRating} setFeedbackRating={setFeedbackRating} feedbackHover={feedbackHover} setFeedbackHover={setFeedbackHover} handleFeedbackSubmit={handleFeedbackSubmit} feedbackSubmitted={feedbackSubmitted} />
       {showProfileSetting && (
         <AnimatePresence>
           <motion.div
