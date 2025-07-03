@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/helpdesk/index.html" }
+  ]
+} 
