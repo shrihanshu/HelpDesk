@@ -7,7 +7,6 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChartBar, FaStar, FaRegStar, FaStarHalfAlt, FaUserFriends, FaTicketAlt, FaCheckCircle, FaHourglassHalf, FaSpinner, FaSearch, FaClipboardList, FaUser, FaPhone, FaEnvelope, FaBuilding, FaUserEdit, FaUpload, FaEdit, FaUsers, FaDownload, FaPlus, FaSyncAlt, FaChartLine, FaDatabase, FaTrash, FaChevronDown, FaCheck, FaChevronRight, FaFileAlt } from "react-icons/fa";
 import CreateTicketForm from "./CreateTicketForm";
-import { toast } from "react-hot-toast";
 
 const cardMotion = {
   initial: { opacity: 0, y: 30 },
@@ -423,22 +422,22 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
   const handleSettingAction = (action) => {
     switch(action) {
       case 'backup':
-        toast.success('Data backup started!');
+        console.log('Data backup started!');
         break;
       case 'godash':
-        toast.success('GoDash connected!');
+        console.log('GoDash connected!');
         break;
       case 'supercontroller':
-        toast.success('SuperController connected!');
+        console.log('SuperController connected!');
         break;
       case 'smtp':
-        toast.success('SMTP enabled!');
+        console.log('SMTP enabled!');
         break;
       case 'edit-auth':
-        toast.success('Authorization edited!');
+        console.log('Authorization edited!');
         break;
       case 'notification':
-        toast.success('Notification enabled!');
+        console.log('Notification enabled!');
         break;
       default:
         break;
@@ -472,6 +471,11 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
   const [logCurrentPage, setLogCurrentPage] = useState(1);
   const logTotalPages = Math.ceil(userLogHistoryData.length / logEntriesPerPage);
   const paginatedLogHistory = userLogHistoryData.slice((logCurrentPage - 1) * logEntriesPerPage, logCurrentPage * logEntriesPerPage);
+
+  // 1. Add a placeholder download function
+  const handleDownload = (ticket) => {
+    alert(`Download for Ticket #${ticket.ticketNo} is not implemented yet.`);
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-100 via-teal-50 to-green-100 dark:bg-gradient-to-br dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 transition-colors">
@@ -890,7 +894,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                               <td className="px-4 py-3 text-center flex items-center gap-3 justify-center">
                                 <button className="hover:text-blue-600" title="Edit Ticket" onClick={() => { setEditTicket(ticket); setEditModalOpen(true); }}><FaEdit /></button>
                                 <button className="hover:text-green-600" title="Create Team" onClick={() => { setCreateTeamTicket(ticket); setCreateTeamModalOpen(true); }}><FaUsers /></button>
-                                <button className="hover:text-gray-700" title="Download"><FaDownload /></button>
+                                <button className="hover:text-gray-700" title="Download" onClick={() => handleDownload(ticket)}><FaDownload /></button>
                               </td>
                             </tr>
                           ))}
@@ -1123,8 +1127,8 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                             <div className="flex items-center justify-between px-8 py-4">
                               <span className="text-black dark:text-white">Language</span>
                               <div className="flex gap-2">
-                                <button onClick={() => { setLang('BM'); toast.success('Language set to BM'); }} className={`px-2 py-1 rounded bg-black text-white text-xs font-bold ${lang === 'BM' ? 'opacity-100' : 'opacity-60'}`}>BM</button>
-                                <button onClick={() => { setLang('BI'); toast.success('Language set to BI'); }} className={`px-2 py-1 rounded bg-black text-white text-xs font-bold ${lang === 'BI' ? 'opacity-100' : 'opacity-60'}`}>BI</button>
+                                <button onClick={() => { setLang('BM'); console.log('Language set to BM'); }} className={`px-2 py-1 rounded bg-black text-white text-xs font-bold ${lang === 'BM' ? 'opacity-100' : 'opacity-60'}`}>BM</button>
+                                <button onClick={() => { setLang('BI'); console.log('Language set to BI'); }} className={`px-2 py-1 rounded bg-black text-white text-xs font-bold ${lang === 'BI' ? 'opacity-100' : 'opacity-60'}`}>BI</button>
                               </div>
                             </div>
                             <div className="flex items-center justify-between px-8 py-4">
@@ -1207,7 +1211,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                             <div className="flex items-center justify-between px-8 py-4">
                               <span className="text-black dark:text-white">Authority Level</span>
                               <div className="relative">
-                                <select value={authLevel} onChange={e => { setAuthLevel(e.target.value); toast.success('Authority Level set to ' + e.target.value); }} className="rounded bg-neutral-300 dark:bg-neutral-700 px-4 py-1 focus:outline-none">
+                                <select value={authLevel} onChange={e => { setAuthLevel(e.target.value); console.log('Authority Level set to ' + e.target.value); }} className="rounded bg-neutral-300 dark:bg-neutral-700 px-4 py-1 focus:outline-none">
                                   <option value="BM">BM</option>
                                   <option value="BI">BI</option>
                                 </select>
@@ -1473,7 +1477,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
               onClick={e => e.stopPropagation()}
             >
               <h3 className="text-2xl font-bold mb-6 text-center text-black dark:text-white font-[Poppins]">My Ticket-Close Ticket</h3>
-              <form className="space-y-5 animate-in fade-in slide-in-from-bottom-6">
+              <form className="space-y-5 animate-in fade-in slide-in-from-bottom-6" onSubmit={e => { e.preventDefault(); alert('Ticket closed successfully!'); setEditModalOpen(false); }}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-black dark:text-white">Ticket No.</label>
@@ -1529,9 +1533,8 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                 </div>
                 <div className="flex justify-between items-center mt-6">
                   <button
-                    type="button"
+                    type="submit"
                     className="px-6 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold text-lg shadow-md hover:from-teal-600 hover:to-blue-600 transition-all focus:outline-none focus:ring-2 focus:ring-teal-400"
-                    onClick={() => { setEditModalOpen(false); }}
                   >
                     Close Ticket
                   </button>
@@ -1574,7 +1577,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
               onClick={e => e.stopPropagation()}
             >
               <h3 className="text-2xl font-bold mb-6 text-center text-black dark:text-white font-[Poppins]">My Ticket-Team Creation</h3>
-              <form className="space-y-5 animate-in fade-in slide-in-from-bottom-6">
+              <form className="space-y-5 animate-in fade-in slide-in-from-bottom-6" onSubmit={e => { e.preventDefault(); alert('Team created successfully!'); setCreateTeamModalOpen(false); }}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1 text-black dark:text-white">Ticket No.</label>
@@ -1625,9 +1628,8 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                 </div>
                 <div className="flex justify-between items-center mt-6">
                   <button
-                    type="button"
+                    type="submit"
                     className="px-6 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold text-lg shadow-md hover:from-teal-600 hover:to-blue-600 transition-all focus:outline-none focus:ring-2 focus:ring-teal-400"
-                    onClick={() => { setCreateTeamModalOpen(false); }}
                   >
                     Create Team
                   </button>

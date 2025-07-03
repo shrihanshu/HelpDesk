@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { FaBell, FaSignOutAlt, FaUser, FaUserShield, FaHeadset, FaUsersCog, FaBars } from "react-icons/fa";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-hot-toast";
 
 const profiles = [
   { label: "User", icon: FaUser },
@@ -61,7 +60,7 @@ const Header = ({ onSignOut, profile, setProfile, sidebarOpen, setSidebarOpen })
             onClick={() => {
               if (lang !== "BM") {
                 setLang("BM");
-                toast.success("Language set to BM");
+                console.log("Language set to BM");
               }
             }}
             className={`px-2 py-1 rounded bg-black text-white text-xs font-bold transition-opacity ${lang === 'BM' ? 'opacity-100' : 'opacity-60'}`}
@@ -72,7 +71,7 @@ const Header = ({ onSignOut, profile, setProfile, sidebarOpen, setSidebarOpen })
             onClick={() => {
               if (lang !== "BI") {
                 setLang("BI");
-                toast.success("Language set to BI");
+                console.log("Language set to BI");
               }
             }}
             className={`px-2 py-1 rounded bg-black text-white text-xs font-bold transition-opacity ${lang === 'BI' ? 'opacity-100' : 'opacity-60'}`}
