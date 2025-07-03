@@ -5,7 +5,7 @@ import Footer from "./Footer";
 import DashboardCard from "./DashboardCard";
 import { Card, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChartBar, FaStar, FaRegStar, FaStarHalfAlt, FaUserFriends, FaTicketAlt, FaCheckCircle, FaHourglassHalf, FaSpinner, FaSearch, FaClipboardList, FaUser, FaPhone, FaEnvelope, FaBuilding, FaUserEdit, FaUpload } from "react-icons/fa";
+import { FaChartBar, FaStar, FaRegStar, FaStarHalfAlt, FaUserFriends, FaTicketAlt, FaCheckCircle, FaHourglassHalf, FaSpinner, FaSearch, FaClipboardList, FaUser, FaPhone, FaEnvelope, FaBuilding, FaUserEdit, FaUpload, FaEdit, FaUsers, FaDownload, FaPlus, FaSyncAlt, FaChartLine, FaDatabase, FaTrash } from "react-icons/fa";
 import CreateTicketForm from "./CreateTicketForm";
 
 const cardMotion = {
@@ -25,21 +25,21 @@ function getRandomStatus() {
   return statusOptions[Math.floor(Math.random() * statusOptions.length)];
 }
 const ticketData = [
-  { ticketNo: "1234", subject: "Login issue", status: getRandomStatus(), supportedBy: "Tech support", date: "13/08/21", rating: 0 },
-  { ticketNo: "1124", subject: "New ticket issue", status: getRandomStatus(), supportedBy: "Operation Team", date: "14/08/21", rating: 0 },
-  { ticketNo: "1224", subject: "New request", status: getRandomStatus(), supportedBy: "Tech support", date: "13/08/21", rating: 4.5 },
-  { ticketNo: "1244", subject: "Ticket submission", status: statusOptions[1], supportedBy: "Operation Team", date: "14/08/21", rating: 0 },
-  { ticketNo: "1114", subject: "Login issue", status: getRandomStatus(), supportedBy: "Tech support", date: "03/08/21", rating: 0 },
-  { ticketNo: "2001", subject: "Access problem", status: getRandomStatus(), supportedBy: "Tech support", date: "15/08/21", rating: 3 },
-  { ticketNo: "2002", subject: "Feedback on UI", status: getRandomStatus(), supportedBy: "Operation Team", date: "16/08/21", rating: 2.5 },
-  { ticketNo: "2003", subject: "Ticket not closing", status: getRandomStatus(), supportedBy: "Tech support", date: "17/08/21", rating: 5 },
-  { ticketNo: "2004", subject: "Feature request", status: getRandomStatus(), supportedBy: "Operation Team", date: "18/08/21", rating: 1 },
-  { ticketNo: "2005", subject: "Bug report", status: getRandomStatus(), supportedBy: "Tech support", date: "19/08/21", rating: 4 },
-  { ticketNo: "3001", subject: "Slow response", status: getRandomStatus(), supportedBy: "Operation Team", date: "20/08/21", rating: 2 },
-  { ticketNo: "3002", subject: "Account locked", status: getRandomStatus(), supportedBy: "Tech support", date: "21/08/21", rating: 3.5 },
-  { ticketNo: "3003", subject: "Password reset", status: getRandomStatus(), supportedBy: "Operation Team", date: "22/08/21", rating: 0 },
-  { ticketNo: "3004", subject: "App crash", status: getRandomStatus(), supportedBy: "Tech support", date: "23/08/21", rating: 4.5 },
-  { ticketNo: "3005", subject: "General feedback", status: getRandomStatus(), supportedBy: "Operation Team", date: "24/08/21", rating: 1.5 },
+  { ticketNo: "1234", subject: "Login issue", category: "Access issue", priority: "High", status: getRandomStatus(), supportedBy: "Tech support", date: "13/08/21" },
+  { ticketNo: "1124", subject: "New ticket issue", category: "Access issue", priority: "Medium", status: getRandomStatus(), supportedBy: "Operation Team", date: "14/08/21" },
+  { ticketNo: "1224", subject: "New request", category: "Feedback", priority: "Low", status: getRandomStatus(), supportedBy: "Tech support", date: "13/08/21" },
+  { ticketNo: "1244", subject: "Ticket submission", category: "Ticketing", priority: "High", status: statusOptions[1], supportedBy: "Operation Team", date: "14/08/21" },
+  { ticketNo: "1114", subject: "Login issue", category: "Access issue", priority: "High", status: getRandomStatus(), supportedBy: "Tech support", date: "03/08/21" },
+  { ticketNo: "2001", subject: "Access problem", category: "Access issue", priority: "Medium", status: getRandomStatus(), supportedBy: "Tech support", date: "15/08/21" },
+  { ticketNo: "2002", subject: "Feedback on UI", category: "Feedback", priority: "Low", status: getRandomStatus(), supportedBy: "Operation Team", date: "16/08/21" },
+  { ticketNo: "2003", subject: "Ticket not closing", category: "Ticketing", priority: "High", status: getRandomStatus(), supportedBy: "Tech support", date: "17/08/21" },
+  { ticketNo: "2004", subject: "Feature request", category: "Feedback", priority: "Medium", status: getRandomStatus(), supportedBy: "Operation Team", date: "18/08/21" },
+  { ticketNo: "2005", subject: "Bug report", category: "Ticketing", priority: "Low", status: getRandomStatus(), supportedBy: "Tech support", date: "19/08/21" },
+  { ticketNo: "3001", subject: "Slow response", category: "Access issue", priority: "High", status: getRandomStatus(), supportedBy: "Operation Team", date: "20/08/21" },
+  { ticketNo: "3002", subject: "Account locked", category: "Access issue", priority: "Medium", status: getRandomStatus(), supportedBy: "Tech support", date: "21/08/21" },
+  { ticketNo: "3003", subject: "Password reset", category: "Ticketing", priority: "Low", status: getRandomStatus(), supportedBy: "Operation Team", date: "22/08/21" },
+  { ticketNo: "3004", subject: "App crash", category: "Feedback", priority: "High", status: getRandomStatus(), supportedBy: "Tech support", date: "23/08/21" },
+  { ticketNo: "3005", subject: "General feedback", category: "Feedback", priority: "Medium", status: getRandomStatus(), supportedBy: "Operation Team", date: "24/08/21" },
 ];
 
 function AppTicketModal({ ticket, open, onClose }) {
@@ -279,6 +279,40 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
     projectAccessLevel: "Basic",
     contact: "+1 234 567 8901"
   });
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editTicket, setEditTicket] = useState(null);
+  const [teamName, setTeamName] = useState("");
+  const [teamMembers, setTeamMembers] = useState([""]);
+  const [remark, setRemark] = useState("");
+  const [createTeamModalOpen, setCreateTeamModalOpen] = useState(false);
+  const [createTeamTicket, setCreateTeamTicket] = useState(null);
+  const [createTeamName, setCreateTeamName] = useState("");
+  const [createTeamMembers, setCreateTeamMembers] = useState([""]);
+  const [createTeamRemark, setCreateTeamRemark] = useState("");
+  const [otherPerfModalOpen, setOtherPerfModalOpen] = useState(false);
+  const [otherPerfMember, setOtherPerfMember] = useState(null);
+  const [userSearch, setUserSearch] = useState("");
+  const [userCurrentPage, setUserCurrentPage] = useState(1);
+  const userRowsPerPage = 5;
+  const [userTable, setUserTable] = useState([
+    { staffId: "ABC123", name: "Abu", department: "IT", speciality: "Software" },
+    { staffId: "ABC124", name: "Ahmad", department: "Software", speciality: "Networking" },
+    { staffId: "ABC125", name: "Ali", department: "Technical", speciality: "Hardware" },
+    { staffId: "ABC126", name: "Sara", department: "IT", speciality: "Software" },
+    { staffId: "ABC127", name: "John", department: "Software", speciality: "Networking" },
+    { staffId: "ABC128", name: "Jane", department: "Technical", speciality: "Hardware" },
+    { staffId: "ABC129", name: "Mike", department: "IT", speciality: "Software" },
+    { staffId: "ABC130", name: "Emily", department: "Software", speciality: "Networking" },
+    { staffId: "ABC131", name: "Noor", department: "Technical", speciality: "Hardware" },
+    { staffId: "ABC132", name: "Zara", department: "IT", speciality: "Software" },
+    { staffId: "ABC133", name: "Omar", department: "Software", speciality: "Networking" },
+    { staffId: "ABC134", name: "Lina", department: "Technical", speciality: "Hardware" },
+    { staffId: "ABC135", name: "Sam", department: "IT", speciality: "Software" },
+    { staffId: "ABC136", name: "Ava", department: "Software", speciality: "Networking" },
+    { staffId: "ABC137", name: "Ray", department: "Technical", speciality: "Hardware" },
+  ]);
+  const [userEditIdx, setUserEditIdx] = useState(null);
+  const [userDeleteIdx, setUserDeleteIdx] = useState(null);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -368,6 +402,12 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
     }));
     setShowProfileSetting(false);
   };
+
+  const filteredUserTable = userTable.filter(row =>
+    Object.values(row).some(val => String(val).toLowerCase().includes(userSearch.toLowerCase()))
+  );
+  const userTotalPages = Math.ceil(filteredUserTable.length / userRowsPerPage);
+  const paginatedUserTable = filteredUserTable.slice((userCurrentPage - 1) * userRowsPerPage, userCurrentPage * userRowsPerPage);
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-100 via-teal-50 to-green-100 dark:bg-gradient-to-br dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 transition-colors">
@@ -719,6 +759,286 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                   <div className="mt-2 text-sm text-black dark:text-white text-center">Showing {paginatedTickets.length} of {filteredTickets.length} entries (Page {currentPage} of {totalPages})</div>
                 </div>
               )}
+              {view === "my-ticket" && profile === "Technical Support" && (
+                <div>
+                  <h2 className="text-2xl font-bold mb-4 text-black dark:text-white font-[Poppins] text-center flex items-center justify-center gap-3">
+                    <FaClipboardList className="inline text-teal-600 dark:text-teal-300 text-3xl" />
+                    My Ticket
+                  </h2>
+                  {/* Page navigation dropdown */}
+                  <div className="flex justify-end items-center mb-4">
+                    <label htmlFor="page-select-ts" className="mr-2 text-black dark:text-white font-medium">Page:</label>
+                    <select
+                      id="page-select-ts"
+                      value={currentPage}
+                      onChange={handlePageChange}
+                      className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white shadow-sm"
+                    >
+                      {Array.from({ length: totalPages }, (_, i) => (
+                        <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {/* Search box with icon */}
+                  <div className="flex justify-center mb-6">
+                    <div className="relative w-full max-w-md">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <FaSearch />
+                      </span>
+                      <input
+                        type="text"
+                        value={search}
+                        onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
+                        placeholder="Find ticket"
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white shadow-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700">
+                    <table className="min-w-full bg-white dark:bg-neutral-900">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-teal-100 to-blue-100 dark:from-teal-900 dark:to-blue-900">
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white rounded-tl-2xl">Ticket No.</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Subject</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Category</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Priority</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Date</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Status</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Person in charge</th>
+                          <th className="px-4 py-3 text-center text-base font-bold text-black dark:text-white rounded-tr-2xl">Action</th>
+                        </tr>
+                      </thead>
+                      <AnimatePresence mode="wait">
+                        <motion.tbody
+                          key={currentPage + '-' + search + '-ts'}
+                          initial={{ opacity: 0, y: 30 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -30 }}
+                          transition={{ duration: 0.4, type: "spring", stiffness: 80, damping: 18 }}
+                        >
+                          {paginatedTickets.map((ticket, idx) => (
+                            <tr key={ticket.ticketNo} className={idx % 2 === 0 ? "bg-neutral-50 dark:bg-neutral-800" : "bg-white dark:bg-neutral-900"}>
+                              <td
+                                className="px-4 py-3 text-blue-700 underline cursor-pointer hover:text-blue-900 transition font-semibold"
+                                onClick={() => { setSelectedTicket(ticket); setModalOpen(true); }}
+                              >
+                                {ticket.ticketNo}
+                              </td>
+                              <td className="px-4 py-3 text-black dark:text-white font-medium">{ticket.subject}</td>
+                              <td className="px-4 py-3 text-black dark:text-white font-medium">{ticket.category || "Access issue"}</td>
+                              <td className="px-4 py-3 text-black dark:text-white font-medium">{ticket.priority || ["High","Medium","Low"][idx%3]}</td>
+                              <td className="px-4 py-3 text-black dark:text-white font-medium">{ticket.date}</td>
+                              <td className="px-4 py-3">
+                                <span className={`px-3 py-1 rounded-full font-semibold text-sm ${ticket.status.color}`}>{ticket.status.label}</span>
+                              </td>
+                              <td className="px-4 py-3 text-black dark:text-white font-medium">{ticket.supportedBy}</td>
+                              <td className="px-4 py-3 text-center flex items-center gap-3 justify-center">
+                                <button className="hover:text-blue-600" title="Edit Ticket" onClick={() => { setEditTicket(ticket); setEditModalOpen(true); }}><FaEdit /></button>
+                                <button className="hover:text-green-600" title="Create Team" onClick={() => { setCreateTeamTicket(ticket); setCreateTeamModalOpen(true); }}><FaUsers /></button>
+                                <button className="hover:text-gray-700" title="Download"><FaDownload /></button>
+                              </td>
+                            </tr>
+                          ))}
+                        </motion.tbody>
+                      </AnimatePresence>
+                    </table>
+                  </div>
+                  <div className="mt-2 text-sm text-black dark:text-white text-center">Showing 1 to 5 of 5 entries</div>
+                </div>
+              )}
+              {view === "performance" && profile === "Technical Support" && (
+                <div className="flex flex-col items-center w-full">
+                  <motion.h2
+                    className="text-3xl font-bold mb-8 text-black dark:text-white font-[Poppins] flex items-center justify-center gap-3"
+                    initial={{ opacity: 0, y: -30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: "spring", stiffness: 120, damping: 18 }}
+                  >
+                    <FaChartLine className="text-teal-600 dark:text-teal-300 text-3xl" />
+                    Performance
+                  </motion.h2>
+                  <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl">
+                    {/* Left/Main Section */}
+                    <div className="flex-1 flex flex-col gap-8">
+                      <motion.div
+                        className="flex flex-col md:flex-row items-center bg-white dark:bg-neutral-900 rounded-2xl shadow-xl p-8 border border-neutral-200 dark:border-neutral-700"
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.1 }}
+                      >
+                        <img
+                          src="https://randomuser.me/api/portraits/men/32.jpg"
+                          alt="Technical Support"
+                          className="w-32 h-32 rounded-full border-4 border-teal-400 shadow-md object-cover mb-4 md:mb-0"
+                        />
+                        <div className="ml-0 md:ml-8 flex flex-col items-center md:items-start">
+                          <h2 className="text-2xl font-bold text-black dark:text-white mb-2">John Doe</h2>
+                          <motion.div
+                            className="bg-gradient-to-r from-blue-100 to-teal-100 dark:from-blue-900 dark:to-teal-900 rounded-xl p-4 shadow flex flex-col gap-2 w-64"
+                            initial={{ opacity: 0, x: 40 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.2 }}
+                          >
+                            <div className="text-black dark:text-white font-semibold">Contact No.: <span className="font-normal">+1 234 567 8901</span></div>
+                            <div className="text-black dark:text-white font-semibold">Department: <span className="font-normal">IT Support</span></div>
+                          </motion.div>
+                        </div>
+                      </motion.div>
+                      <motion.div
+                        className="bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-yellow-700 dark:to-yellow-900 rounded-2xl p-6 shadow-xl flex flex-col items-center border border-neutral-200 dark:border-neutral-700"
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.25 }}
+                      >
+                        <h3 className="text-xl font-bold mb-4 text-black dark:text-white">Total Tickets Handled</h3>
+                        <div className="flex flex-col md:flex-row gap-8 w-full justify-between">
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg font-semibold text-black dark:text-white">Tickets Solved</span>
+                            <span className="text-3xl font-extrabold text-green-600 dark:text-green-400">120</span>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg font-semibold text-black dark:text-white">Tickets Pending</span>
+                            <span className="text-3xl font-extrabold text-orange-500 dark:text-orange-300">8</span>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg font-semibold text-black dark:text-white">Tickets In Progress</span>
+                            <span className="text-3xl font-extrabold text-yellow-600 dark:text-yellow-300">5</span>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg font-semibold text-black dark:text-white">Rating</span>
+                            <div className="flex gap-1 mt-1">
+                              {[1,2,3,4,5].map((star) => (
+                                <FaStar key={star} className="text-yellow-400 text-2xl" />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </div>
+                    {/* Right Section: Other Technical Supports */}
+                    <motion.div
+                      className="w-full md:w-80 flex-shrink-0 bg-white dark:bg-neutral-900 rounded-2xl shadow-xl p-6 border border-neutral-200 dark:border-neutral-700 flex flex-col gap-6"
+                      initial={{ opacity: 0, x: 40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.3 }}
+                    >
+                      <h4 className="text-lg font-bold text-black dark:text-white mb-4">Other Technical Supports</h4>
+                      {[
+                        { name: "Jane Smith", img: "https://randomuser.me/api/portraits/women/44.jpg" },
+                        { name: "Mike Johnson", img: "https://randomuser.me/api/portraits/men/65.jpg" },
+                        { name: "Emily Brown", img: "https://randomuser.me/api/portraits/women/22.jpg" },
+                      ].map((member, idx) => (
+                        <motion.div
+                          key={member.name}
+                          className="flex items-center gap-4 bg-gradient-to-r from-teal-100 to-blue-100 dark:from-teal-900 dark:to-blue-900 rounded-xl p-3 shadow"
+                          initial={{ opacity: 0, x: 30 * (idx + 1) }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.35 + idx * 0.05 }}
+                        >
+                          <img src={member.img} alt={member.name} className="w-14 h-14 rounded-full border-2 border-teal-400 object-cover" />
+                          <div className="flex-1">
+                            <div className="text-base font-semibold text-black dark:text-white">{member.name}</div>
+                          </div>
+                          <button
+                            className="px-4 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold shadow hover:from-teal-600 hover:to-blue-600 transition-all focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+                            onClick={() => { setOtherPerfMember(member); setOtherPerfModalOpen(true); }}
+                          >
+                            View Details
+                          </button>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </div>
+                </div>
+              )}
+              {view === "database-user" && profile === "Admin" && (
+                <motion.div
+                  key="database-user"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -30 }}
+                  transition={{ type: "spring", stiffness: 120, damping: 18 }}
+                  className="w-full"
+                >
+                  <h2 className="text-2xl font-bold mb-6 text-black dark:text-white font-[Poppins] text-center flex items-center justify-center gap-3">
+                    <FaDatabase className="inline text-teal-600 dark:text-teal-300 text-3xl" />
+                    Database
+                  </h2>
+                  {/* Search and page dropdown */}
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+                    <div className="relative w-full max-w-xs mx-auto md:mx-0">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <FaSearch />
+                      </span>
+                      <input
+                        type="text"
+                        value={userSearch}
+                        onChange={e => { setUserSearch(e.target.value); setUserCurrentPage(1); }}
+                        placeholder="Find ticket"
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white shadow-sm"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 justify-center md:justify-end">
+                      <label htmlFor="user-page-select" className="text-black dark:text-white font-medium">Page:</label>
+                      <select
+                        id="user-page-select"
+                        value={userCurrentPage}
+                        onChange={e => setUserCurrentPage(Number(e.target.value))}
+                        className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400 text-black dark:text-white shadow-sm"
+                      >
+                        {Array.from({ length: userTotalPages }, (_, i) => (
+                          <option key={i + 1} value={i + 1}>Page {i + 1}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  {/* Table */}
+                  <div className="overflow-x-auto rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700">
+                    <table className="min-w-full bg-white dark:bg-neutral-900">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-teal-100 to-blue-100 dark:from-teal-900 dark:to-blue-900">
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white rounded-tl-2xl"><input type="checkbox" disabled /></th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Staff ID</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Name</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Department</th>
+                          <th className="px-4 py-3 text-left text-base font-bold text-black dark:text-white">Speciality</th>
+                          <th className="px-4 py-3 text-center text-base font-bold text-black dark:text-white rounded-tr-2xl">Setting</th>
+                        </tr>
+                      </thead>
+                      <AnimatePresence mode="wait">
+                        <motion.tbody
+                          key={userCurrentPage + '-' + userSearch}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3, type: "spring", stiffness: 100 }}
+                        >
+                          {paginatedUserTable.length === 0 ? (
+                            <tr>
+                              <td colSpan={6} className="text-center py-8 text-neutral-500 dark:text-neutral-400">No entries found.</td>
+                            </tr>
+                          ) : (
+                            paginatedUserTable.map((row, idx) => (
+                              <tr key={row.staffId} className={idx % 2 === 0 ? "bg-neutral-50 dark:bg-neutral-800" : "bg-white dark:bg-neutral-900"}>
+                                <td className="px-4 py-3 text-center"><input type="checkbox" /></td>
+                                <td className="px-4 py-3 text-black dark:text-white font-semibold">{row.staffId}</td>
+                                <td className="px-4 py-3 text-black dark:text-white font-medium">{row.name}</td>
+                                <td className="px-4 py-3 text-black dark:text-white font-medium">{row.department}</td>
+                                <td className="px-4 py-3 text-black dark:text-white font-medium">{row.speciality}</td>
+                                <td className="px-4 py-3 text-center flex items-center gap-4 justify-center">
+                                  <button className="hover:text-blue-600" title="Edit" onClick={() => setUserEditIdx(row.staffId)}><FaUserEdit /></button>
+                                  <button className="hover:text-red-600" title="Delete" onClick={() => setUserDeleteIdx(row.staffId)}><FaTrash /></button>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </motion.tbody>
+                      </AnimatePresence>
+                    </table>
+                  </div>
+                  <div className="mt-2 text-sm text-black dark:text-white text-center">Showing {paginatedUserTable.length} of {filteredUserTable.length} entries (Page {userCurrentPage} of {userTotalPages})</div>
+                </motion.div>
+              )}
             </AnimatePresence>
           </main>
           <Footer />
@@ -851,6 +1171,294 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                   Update User
                 </button>
               </form>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+      )}
+      {editModalOpen && (
+        <AnimatePresence>
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setEditModalOpen(false)}
+          >
+            <motion.div
+              className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl p-8 w-full max-w-lg relative"
+              initial={{ scale: 0.85, y: 40, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.85, y: 40, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 180, damping: 18 }}
+              onClick={e => e.stopPropagation()}
+            >
+              <h3 className="text-2xl font-bold mb-6 text-center text-black dark:text-white font-[Poppins]">My Ticket-Close Ticket</h3>
+              <form className="space-y-5 animate-in fade-in slide-in-from-bottom-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-black dark:text-white">Ticket No.</label>
+                    <input
+                      type="text"
+                      value={editTicket?.ticketNo || ""}
+                      disabled
+                      className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 px-3 py-2 text-black dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-black dark:text-white">Team Name</label>
+                    <input
+                      type="text"
+                      value={teamName}
+                      onChange={e => setTeamName(e.target.value)}
+                      className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 text-black dark:text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-black dark:text-white">Team Member</label>
+                  <div className="flex gap-2">
+                    {teamMembers.map((member, idx) => (
+                      <input
+                        key={idx}
+                        type="text"
+                        value={member}
+                        onChange={e => setTeamMembers(teamMembers.map((m, i) => i === idx ? e.target.value : m))}
+                        className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 text-black dark:text-white"
+                        placeholder={`Member ${idx + 1}`}
+                      />
+                    ))}
+                    <button
+                      type="button"
+                      className="p-2 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 hover:from-teal-500 hover:to-blue-600 shadow-md text-white flex items-center justify-center transition-all duration-200 border-2 border-white dark:border-neutral-800 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                      onClick={() => setTeamMembers([...teamMembers, ""])}
+                      title="Add Team Member"
+                    >
+                      <FaPlus className="text-lg" />
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-black dark:text-white">Remark</label>
+                  <textarea
+                    value={remark}
+                    onChange={e => setRemark(e.target.value)}
+                    rows={3}
+                    className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 text-black dark:text-white"
+                    placeholder="Enter remark..."
+                  />
+                </div>
+                <div className="flex justify-between items-center mt-6">
+                  <button
+                    type="button"
+                    className="px-6 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold text-lg shadow-md hover:from-teal-600 hover:to-blue-600 transition-all focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    onClick={() => { setEditModalOpen(false); }}
+                  >
+                    Close Ticket
+                  </button>
+                  <button
+                    type="button"
+                    className="p-3 rounded-full bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-black dark:text-white shadow transition"
+                    title="Reload"
+                    onClick={() => { setTeamName(""); setTeamMembers([""]); setRemark(""); }}
+                  >
+                    <FaSyncAlt />
+                  </button>
+                </div>
+              </form>
+              <button
+                className="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-700 dark:hover:text-white focus:outline-none"
+                onClick={() => setEditModalOpen(false)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+      )}
+      {createTeamModalOpen && (
+        <AnimatePresence>
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setCreateTeamModalOpen(false)}
+          >
+            <motion.div
+              className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl p-8 w-full max-w-lg relative"
+              initial={{ scale: 0.85, y: 40, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.85, y: 40, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 180, damping: 18 }}
+              onClick={e => e.stopPropagation()}
+            >
+              <h3 className="text-2xl font-bold mb-6 text-center text-black dark:text-white font-[Poppins]">My Ticket-Team Creation</h3>
+              <form className="space-y-5 animate-in fade-in slide-in-from-bottom-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-black dark:text-white">Ticket No.</label>
+                    <input
+                      type="text"
+                      value={createTeamTicket?.ticketNo || ""}
+                      disabled
+                      className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 px-3 py-2 text-black dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-black dark:text-white">Team Name</label>
+                    <input
+                      type="text"
+                      value={createTeamName}
+                      onChange={e => setCreateTeamName(e.target.value)}
+                      className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 text-black dark:text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-black dark:text-white">Team Member</label>
+                  <div className="flex gap-2">
+                    {createTeamMembers.map((member, idx) => (
+                      <input
+                        key={idx}
+                        type="text"
+                        value={member}
+                        onChange={e => setCreateTeamMembers(createTeamMembers.map((m, i) => i === idx ? e.target.value : m))}
+                        className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 text-black dark:text-white"
+                        placeholder={`Member ${idx + 1}`}
+                      />
+                    ))}
+                    <button type="button" className="p-2 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 hover:from-teal-500 hover:to-blue-600 shadow-md text-white flex items-center justify-center transition-all duration-200 border-2 border-white dark:border-neutral-800 focus:outline-none focus:ring-2 focus:ring-teal-400" onClick={() => setCreateTeamMembers([...createTeamMembers, ""])} title="Add Team Member">
+                      <FaPlus className="text-lg" />
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 text-black dark:text-white">Remark</label>
+                  <textarea
+                    value={createTeamRemark}
+                    onChange={e => setCreateTeamRemark(e.target.value)}
+                    rows={3}
+                    className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 text-black dark:text-white"
+                    placeholder="Enter remark..."
+                  />
+                </div>
+                <div className="flex justify-between items-center mt-6">
+                  <button
+                    type="button"
+                    className="px-6 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold text-lg shadow-md hover:from-teal-600 hover:to-blue-600 transition-all focus:outline-none focus:ring-2 focus:ring-teal-400"
+                    onClick={() => { setCreateTeamModalOpen(false); }}
+                  >
+                    Create Team
+                  </button>
+                  <button
+                    type="button"
+                    className="p-3 rounded-full bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-black dark:text-white shadow transition"
+                    title="Reload"
+                    onClick={() => { setCreateTeamName(""); setCreateTeamMembers([""]); setCreateTeamRemark(""); }}
+                  >
+                    <FaSyncAlt />
+                  </button>
+                </div>
+              </form>
+              <button
+                className="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-700 dark:hover:text-white focus:outline-none"
+                onClick={() => setCreateTeamModalOpen(false)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+      )}
+      {otherPerfModalOpen && otherPerfMember && (
+        <AnimatePresence>
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setOtherPerfModalOpen(false)}
+          >
+            <motion.div
+              className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl p-8 w-full max-w-2xl relative"
+              initial={{ scale: 0.85, y: 40, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.85, y: 40, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 180, damping: 18 }}
+              onClick={e => e.stopPropagation()}
+            >
+              <h3 className="text-2xl font-bold mb-8 text-center text-black dark:text-white font-[Poppins] flex items-center justify-center gap-3">
+                <FaChartLine className="text-teal-600 dark:text-teal-300 text-3xl" />
+                Performance
+              </h3>
+              <div className="flex flex-col md:flex-row gap-8 w-full">
+                {/* Left/Main Section */}
+                <div className="flex-1 flex flex-col gap-8">
+                  <motion.div
+                    className="flex flex-col md:flex-row items-center bg-white dark:bg-neutral-900 rounded-2xl shadow-xl p-8 border border-neutral-200 dark:border-neutral-700"
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.1 }}
+                  >
+                    <img
+                      src={otherPerfMember.img}
+                      alt={otherPerfMember.name}
+                      className="w-32 h-32 rounded-full border-4 border-teal-400 shadow-md object-cover mb-4 md:mb-0"
+                    />
+                    <div className="ml-0 md:ml-8 flex flex-col items-center md:items-start">
+                      <h2 className="text-2xl font-bold text-black dark:text-white mb-2">{otherPerfMember.name}</h2>
+                      <motion.div
+                        className="bg-gradient-to-r from-blue-100 to-teal-100 dark:from-blue-900 dark:to-teal-900 rounded-xl p-4 shadow flex flex-col gap-2 w-64"
+                        initial={{ opacity: 0, x: 40 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.2 }}
+                      >
+                        <div className="text-black dark:text-white font-semibold">Contact No.: <span className="font-normal">+1 987 654 321{otherPerfMember.name.length}</span></div>
+                        <div className="text-black dark:text-white font-semibold">Department: <span className="font-normal">IT Support</span></div>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                  <motion.div
+                    className="bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-yellow-700 dark:to-yellow-900 rounded-2xl p-6 shadow-xl flex flex-col items-center border border-neutral-200 dark:border-neutral-700"
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.25 }}
+                  >
+                    <h3 className="text-xl font-bold mb-4 text-black dark:text-white">Total Tickets Handled</h3>
+                    <div className="flex flex-col md:flex-row gap-8 w-full justify-between">
+                      <div className="flex flex-col items-center">
+                        <span className="text-lg font-semibold text-black dark:text-white">Tickets Solved</span>
+                        <span className="text-3xl font-extrabold text-green-600 dark:text-green-400">{100 + otherPerfMember.name.length}</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <span className="text-lg font-semibold text-black dark:text-white">Tickets Pending</span>
+                        <span className="text-3xl font-extrabold text-orange-500 dark:text-orange-300">{5 + otherPerfMember.name.length}</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <span className="text-lg font-semibold text-black dark:text-white">Tickets In Progress</span>
+                        <span className="text-3xl font-extrabold text-yellow-600 dark:text-yellow-300">{2 + otherPerfMember.name.length}</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <span className="text-lg font-semibold text-black dark:text-white">Rating</span>
+                        <div className="flex gap-1 mt-1">
+                          {[1,2,3,4,5].map((star) => (
+                            <FaStar key={star} className="text-yellow-400 text-2xl" />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+              <button
+                className="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-700 dark:hover:text-white focus:outline-none"
+                onClick={() => setOtherPerfModalOpen(false)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
             </motion.div>
           </motion.div>
         </AnimatePresence>

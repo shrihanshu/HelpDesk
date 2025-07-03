@@ -1,5 +1,5 @@
-import React from "react";
-import { FaTachometerAlt, FaTicketAlt, FaClipboardList, FaCheckCircle, FaChartLine, FaTimes, FaDatabase, FaCog, FaHistory } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaTachometerAlt, FaTicketAlt, FaClipboardList, FaCheckCircle, FaChartLine, FaTimes, FaDatabase, FaCog, FaHistory, FaUser, FaUsers, FaHeadset } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const Sidebar = ({ profile, setSidebarOpen, onNavigate }) => {
@@ -7,7 +7,11 @@ const Sidebar = ({ profile, setSidebarOpen, onNavigate }) => {
   if (profile === "Admin") {
     items = [
       { icon: FaTachometerAlt, label: "Dashboard" },
-      { icon: FaDatabase, label: "Database" },
+      { icon: FaDatabase, label: "Database", subItems: [
+        { label: "User", icon: FaUser },
+        { label: "Operation Team", icon: FaUsers },
+        { label: "Technical Support", icon: FaHeadset },
+      ] },
       { icon: FaCog, label: "Setting" },
       { icon: FaHistory, label: "User Log History" },
     ];
@@ -32,6 +36,9 @@ const Sidebar = ({ profile, setSidebarOpen, onNavigate }) => {
       { icon: FaClipboardList, label: "My Ticket" },
     ];
   }
+
+  const [dbOpen, setDbOpen] = useState(false);
+
   return (
     <motion.div
       initial={{ x: -260 }}
@@ -51,26 +58,61 @@ const Sidebar = ({ profile, setSidebarOpen, onNavigate }) => {
       <h1 className="text-2xl font-extrabold font-[Poppins] text-center text-black dark:text-white tracking-tight mb-8">Helpdesk</h1>
       <div className="space-y-6 w-full">
         {items.map((item) => (
-          <div
-            key={item.label}
-            className="flex items-center space-x-3 cursor-pointer hover:bg-black hover:text-white dark:hover:bg-black dark:hover:text-white px-4 py-2 rounded-lg transition-colors text-black dark:text-white"
-            onClick={() => {
-              if (item.label === 'Dashboard' && typeof onNavigate === 'function') {
-                onNavigate('dashboard');
-                setSidebarOpen && setSidebarOpen(false);
-              } else if (item.label === 'New Ticket' && typeof onNavigate === 'function') {
-                onNavigate('new-ticket');
-                setSidebarOpen && setSidebarOpen(false);
-              } else if (item.label === 'My Ticket' && typeof onNavigate === 'function') {
-                onNavigate('my-ticket');
-                setSidebarOpen && setSidebarOpen(false);
-              } else {
-                setSidebarOpen && setSidebarOpen(false);
-              }
-            }}
-          >
-            <item.icon />
-            <span className="font-medium">{item.label}</span>
+          <div key={item.label}>
+            <div
+              className={`flex items-center space-x-3 cursor-pointer hover:bg-black hover:text-white dark:hover:bg-black dark:hover:text-white px-4 py-2 rounded-lg transition-colors text-black dark:text-white ${item.label === 'Database' ? 'font-bold' : ''}`}
+              onClick={() => {
+                if (item.label === 'Dashboard' && typeof onNavigate === 'function') {
+                  onNavigate('dashboard');
+                  setSidebarOpen && setSidebarOpen(false);
+                } else if (item.label === 'New Ticket' && typeof onNavigate === 'function') {
+                  onNavigate('new-ticket');
+                  setSidebarOpen && setSidebarOpen(false);
+                } else if (item.label === 'My Ticket' && typeof onNavigate === 'function') {
+                  onNavigate('my-ticket');
+                  setSidebarOpen && setSidebarOpen(false);
+                } else if (item.label === 'Performance' && typeof onNavigate === 'function') {
+                  onNavigate('performance');
+                  setSidebarOpen && setSidebarOpen(false);
+                } else if (item.label === 'Database') {
+                  setDbOpen((prev) => !prev);
+                } else if (item.label === 'Setting' && typeof onNavigate === 'function') {
+                  onNavigate('setting');
+                  setSidebarOpen && setSidebarOpen(false);
+                } else if (item.label === 'User Log History' && typeof onNavigate === 'function') {
+                  onNavigate('user-log-history');
+                  setSidebarOpen && setSidebarOpen(false);
+                } else {
+                  setSidebarOpen && setSidebarOpen(false);
+                }
+              }}
+            >
+              <item.icon />
+              <span className="font-medium">{item.label}</span>
+              {item.label === 'Database' && (
+                <span className="ml-auto">{dbOpen ? '▲' : '▼'}</span>
+              )}
+            </div>
+            {/* Sub-items for Database */}
+            {item.label === 'Database' && dbOpen && (
+              <div className="ml-8 mt-2 space-y-2">
+                {item.subItems.map((sub) => (
+                  <div
+                    key={sub.label}
+                    className="flex items-center space-x-2 cursor-pointer hover:bg-teal-100 dark:hover:bg-teal-800 px-3 py-1 rounded-lg transition-colors text-black dark:text-white"
+                    onClick={() => {
+                      if (typeof onNavigate === 'function') {
+                        onNavigate(`database-${sub.label.toLowerCase().replace(/ /g, '-')}`);
+                        setSidebarOpen && setSidebarOpen(false);
+                      }
+                    }}
+                  >
+                    {sub.icon && <sub.icon className="mr-2" />}
+                    <span>{sub.label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
