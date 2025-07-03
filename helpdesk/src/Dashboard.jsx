@@ -1409,6 +1409,111 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
                   <div className="mt-2 text-sm text-black dark:text-white text-center">Showing 1 to 5 of 5 entries</div>
                 </div>
               )}
+              {view === "performance" && profile === "Operation Team" && (
+                <div className="flex flex-col items-center w-full">
+                  <motion.h2
+                    className="text-3xl font-bold mb-8 text-black dark:text-white font-[Poppins] flex items-center justify-center gap-3"
+                    initial={{ opacity: 0, y: -30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: "spring", stiffness: 120, damping: 18 }}
+                  >
+                    <FaChartLine className="text-teal-600 dark:text-teal-300 text-3xl" />
+                    Performance
+                  </motion.h2>
+                  <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl">
+                    {/* Left/Main Section */}
+                    <div className="flex-1 flex flex-col gap-8">
+                      <motion.div
+                        className="flex flex-col md:flex-row items-center bg-white dark:bg-neutral-900 rounded-2xl shadow-xl p-8 border border-neutral-200 dark:border-neutral-700"
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.1 }}
+                      >
+                        <img
+                          src="https://randomuser.me/api/portraits/men/65.jpg"
+                          alt="Operation Team"
+                          className="w-32 h-32 rounded-full border-4 border-teal-400 shadow-md object-cover mb-4 md:mb-0"
+                        />
+                        <div className="ml-0 md:ml-8 flex flex-col items-center md:items-start">
+                          <h2 className="text-2xl font-bold text-black dark:text-white mb-2">Alex Turner</h2>
+                          <motion.div
+                            className="bg-gradient-to-r from-blue-100 to-teal-100 dark:from-blue-900 dark:to-teal-900 rounded-xl p-4 shadow flex flex-col gap-2 w-64"
+                            initial={{ opacity: 0, x: 40 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.2 }}
+                          >
+                            <div className="text-black dark:text-white font-semibold">Contact No.: <span className="font-normal">+1 555 123 4567</span></div>
+                            <div className="text-black dark:text-white font-semibold">Department: <span className="font-normal">Operation Team</span></div>
+                          </motion.div>
+                        </div>
+                      </motion.div>
+                      <motion.div
+                        className="bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-yellow-700 dark:to-yellow-900 rounded-2xl p-6 shadow-xl flex flex-col items-center border border-neutral-200 dark:border-neutral-700"
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.25 }}
+                      >
+                        <h3 className="text-xl font-bold mb-4 text-black dark:text-white">Total Tickets Handled</h3>
+                        <div className="flex flex-col md:flex-row gap-8 w-full justify-between">
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg font-semibold text-black dark:text-white">Tickets Solved</span>
+                            <span className="text-3xl font-extrabold text-green-600 dark:text-green-400">98</span>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg font-semibold text-black dark:text-white">Tickets Pending</span>
+                            <span className="text-3xl font-extrabold text-orange-500 dark:text-orange-300">12</span>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg font-semibold text-black dark:text-white">Tickets In Progress</span>
+                            <span className="text-3xl font-extrabold text-yellow-600 dark:text-yellow-300">7</span>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <span className="text-lg font-semibold text-black dark:text-white">Rating</span>
+                            <div className="flex gap-1 mt-1">
+                              {[1,2,3,4,5].map((star) => (
+                                <FaStar key={star} className="text-yellow-400 text-2xl" />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </div>
+                    {/* Right Section: Other Operation Team Members */}
+                    <motion.div
+                      className="w-full md:w-80 flex-shrink-0 bg-white dark:bg-neutral-900 rounded-2xl shadow-xl p-6 border border-neutral-200 dark:border-neutral-700 flex flex-col gap-6"
+                      initial={{ opacity: 0, x: 40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.3 }}
+                    >
+                      <h4 className="text-lg font-bold text-black dark:text-white mb-4">Other Operation Team Members</h4>
+                      {[
+                        { name: "Sam Carter", img: "https://randomuser.me/api/portraits/men/22.jpg" },
+                        { name: "Linda May", img: "https://randomuser.me/api/portraits/women/44.jpg" },
+                        { name: "Chris Lee", img: "https://randomuser.me/api/portraits/men/33.jpg" },
+                      ].map((member, idx) => (
+                        <motion.div
+                          key={member.name}
+                          className="flex items-center gap-4 bg-gradient-to-r from-teal-100 to-blue-100 dark:from-teal-900 dark:to-blue-900 rounded-xl p-3 shadow"
+                          initial={{ opacity: 0, x: 30 * (idx + 1) }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ type: "spring", stiffness: 120, damping: 18, delay: 0.35 + idx * 0.05 }}
+                        >
+                          <img src={member.img} alt={member.name} className="w-14 h-14 rounded-full border-2 border-teal-400 object-cover" />
+                          <div className="flex-1">
+                            <div className="text-base font-semibold text-black dark:text-white">{member.name}</div>
+                          </div>
+                          <button
+                            className="px-4 py-2 rounded-lg bg-gradient-to-r from-teal-500 to-blue-500 text-white font-bold shadow hover:from-teal-600 hover:to-blue-600 transition-all focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+                            onClick={() => { setOtherPerfMember(member); setOtherPerfModalOpen(true); }}
+                          >
+                            View Details
+                          </button>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </div>
+                </div>
+              )}
             </AnimatePresence>
           </main>
           <Footer />
