@@ -1,11 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sun, Moon } from "lucide-react";
-import { FaUser, FaLock } from "react-icons/fa";
+import { FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuth } from "./contexts/AuthContext";
 
 // Add a Google Fonts import for 'Poppins' in index.html for best effect
 
 const LoginPage = ({ onShowSignup, onShowForgot, onSignIn }) => {
+  const { login } = useAuth();
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    username: '',
+    password: ''
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   // State to track dark mode
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== "undefined") {
@@ -25,6 +37,48 @@ const LoginPage = ({ onShowSignup, onShowForgot, onSignIn }) => {
 
   // Toggle handler
   const toggleDark = () => setIsDark((prev) => !prev);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user starts typing
+    if (error) setError('');
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!formData.username.trim() || !formData.password.trim()) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const result = await login(formData.username, formData.password);
+      
+      if (result.success) {
+        console.log(result.message);
+        onSignIn();
+      } else {
+        setError(result.message);
+      }
+    } catch (error) {
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-teal-50 to-green-100 dark:bg-gradient-to-br dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 transition-colors">
@@ -47,14 +101,35 @@ const LoginPage = ({ onShowSignup, onShowForgot, onSignIn }) => {
           </button>
         </div>
         
-        <form>
+        {/* Demo Credentials Info */}
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <h3 className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">Demo Credentials:</h3>
+          <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+            <div><strong>User:</strong> user / user123</div>
+            <div><strong>Admin:</strong> admin / admin123</div>
+            <div><strong>Tech Support:</strong> techsupport / tech123</div>
+            <div><strong>Operation Team:</strong> operation / operation123</div>
+          </div>
+        </div>
+        
+        <form onSubmit={handleSubmit}>
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+            </div>
+          )}
+
           <div className="mb-4">
             <div className="relative">
               <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
+                name="username"
                 placeholder="Username"
+                value={formData.username}
+                onChange={handleInputChange}
                 className="w-full p-3 pl-10 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -63,19 +138,31 @@ const LoginPage = ({ onShowSignup, onShowForgot, onSignIn }) => {
             <div className="relative">
               <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
+                name="password"
                 placeholder="Password"
-                className="w-full p-3 pl-10 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+                value={formData.password}
+                onChange={handleInputChange}
+                className="w-full p-3 pl-10 pr-12 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-neutral-50 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-teal-400 transition"
+                disabled={isLoading}
               />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                disabled={isLoading}
+              >
+                {showPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 
           <button
-            className="w-full mb-4 bg-black hover:bg-neutral-800 focus:bg-neutral-900 text-white border-none dark:bg-white dark:text-black dark:hover:bg-neutral-200 dark:focus:bg-neutral-300 transition-colors rounded-lg py-2 font-semibold text-lg"
-            onClick={onSignIn}
-            type="button"
+            className="w-full mb-4 bg-black hover:bg-neutral-800 focus:bg-neutral-900 text-white border-none dark:bg-white dark:text-black dark:hover:bg-neutral-200 dark:focus:bg-neutral-300 transition-colors rounded-lg py-2 font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            type="submit"
+            disabled={isLoading}
           >
-            Sign In
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
 
@@ -83,7 +170,11 @@ const LoginPage = ({ onShowSignup, onShowForgot, onSignIn }) => {
           <button type="button" className="hover:underline text-black dark:text-white bg-transparent border-none outline-none cursor-pointer transition-colors" onClick={onShowForgot}>
             Forgot password
           </button>
-          <button type="button" className="hover:underline text-black dark:text-white bg-transparent border-none outline-none cursor-pointer transition-colors" onClick={onShowSignup}>
+          <button 
+            type="button" 
+            className="hover:underline text-black dark:text-white bg-transparent border-none outline-none cursor-pointer transition-colors" 
+            onClick={() => window.location.href = '?signup=true'}
+          >
             Sign Up
           </button>
         </div>

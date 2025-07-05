@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { FaTachometerAlt, FaTicketAlt, FaClipboardList, FaCheckCircle, FaChartLine, FaTimes, FaDatabase, FaCog, FaHistory, FaUser, FaUsers, FaHeadset, FaLifeRing } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { useRoleAccess } from "./hooks/useRoleAccess";
 
-const Sidebar = ({ profile, setSidebarOpen, onNavigate }) => {
+const Sidebar = ({ profile, setSidebarOpen, onNavigate, currentUser }) => {
+  const { isAdmin, isUser, isTechSupport, isOperationTeam, canManageUsers, canViewAnalytics } = useRoleAccess();
+  
   let items = [];
-  if (profile === "Admin") {
+  
+  if (isAdmin()) {
     items = [
       { icon: FaTachometerAlt, label: "Dashboard" },
       { icon: FaDatabase, label: "Database", subItems: [
@@ -15,13 +19,13 @@ const Sidebar = ({ profile, setSidebarOpen, onNavigate }) => {
       { icon: FaCog, label: "Setting" },
       { icon: FaHistory, label: "User Log History" },
     ];
-  } else if (profile === "Technical Support") {
+  } else if (isTechSupport()) {
     items = [
       { icon: FaTachometerAlt, label: "Dashboard" },
       { icon: FaClipboardList, label: "My Ticket" },
       { icon: FaChartLine, label: "Performance" },
     ];
-  } else if (profile === "Operation Team") {
+  } else if (isOperationTeam()) {
     items = [
       { icon: FaTachometerAlt, label: "Dashboard" },
       { icon: FaCheckCircle, label: "Ticket Approval" },
@@ -55,10 +59,33 @@ const Sidebar = ({ profile, setSidebarOpen, onNavigate }) => {
       >
         <FaTimes />
       </button>
-      <div className="flex items-center gap-3 text-3xl font-extrabold text-teal-500 mb-10 tracking-tight font-[Poppins]">
+      
+      {/* Logo */}
+      <div className="flex items-center gap-3 text-3xl font-extrabold text-teal-500 mb-6 tracking-tight font-[Poppins]">
         <FaLifeRing className="text-4xl" />
         Helpdesk
       </div>
+      
+      {/* User Info */}
+      <div className="w-full p-3 bg-white dark:bg-neutral-700 rounded-lg shadow-sm mb-4">
+        <div className="flex items-center gap-3">
+          <img 
+            src={currentUser?.profile?.avatar || "https://randomuser.me/api/portraits/men/32.jpg"} 
+            alt="Profile" 
+            className="w-10 h-10 rounded-full"
+          />
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-black dark:text-white text-sm truncate">
+              {currentUser?.profile?.realName || 'User'}
+            </div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
+              {profile}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Navigation Items */}
       <div className="space-y-6 w-full">
         {items.map((item) => (
           <div key={item.label}>
@@ -84,6 +111,9 @@ const Sidebar = ({ profile, setSidebarOpen, onNavigate }) => {
                   setSidebarOpen && setSidebarOpen(false);
                 } else if (item.label === 'User Log History' && typeof onNavigate === 'function') {
                   onNavigate('user-log-history');
+                  setSidebarOpen && setSidebarOpen(false);
+                } else if (item.label === 'Ticket Approval' && typeof onNavigate === 'function') {
+                  onNavigate('ticket-approval');
                   setSidebarOpen && setSidebarOpen(false);
                 } else {
                   setSidebarOpen && setSidebarOpen(false);

@@ -5,10 +5,11 @@ import ForgotPasswordPage from "./ForgotPasswordPage";
 import Dashboard from "./Dashboard";
 import { FaRobot, FaUserCircle } from "react-icons/fa";
 import ChatBot from 'react-simple-chatbot';
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-function App() {
-  const [page, setPage] = useState("dashboard");
-  const [profile, setProfile] = useState("User");
+function AppContent() {
+  const { currentUser, isAuthenticated, loading, logout } = useAuth();
   const [showBot, setShowBot] = useState(false);
 
   // Avatar images
@@ -18,20 +19,43 @@ function App() {
   const isDark = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
   const botColor = isDark ? "#14b8a6" : "#2563eb"; // teal-500 for dark, blue-600 for light
 
-  let content;
-  if (page === "dashboard") {
-    content = <Dashboard onLogout={() => setPage("login")} profile={profile} setProfile={setProfile} />;
-  } else if (page === "signup") {
-    content = <SignupPage onShowLogin={() => setPage("login")} onShowForgot={() => setPage("forgot")} />;
-  } else if (page === "forgot") {
-    content = <ForgotPasswordPage onShowLogin={() => setPage("login")} />;
-  } else {
-    content = <LoginPage onShowSignup={() => setPage("signup")} onShowForgot={() => setPage("forgot")} onSignIn={() => setPage("dashboard")} />;
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-teal-50 to-green-100 dark:bg-gradient-to-br dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mx-auto mb-4"></div>
+          <p className="text-neutral-600 dark:text-neutral-400">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
+  // If not authenticated, show login page
+  if (!isAuthenticated) {
+    // Check if user wants to sign up
+    const urlParams = new URLSearchParams(window.location.search);
+    const showSignup = urlParams.get('signup') === 'true';
+    
+    if (showSignup) {
+      return <SignupPage />;
+    }
+    
+    return <LoginPage />;
+  }
+
+  // If authenticated, show dashboard with user's role
   return (
     <>
-      {content}
+      <ProtectedRoute>
+        <Dashboard 
+          onLogout={logout} 
+          profile={currentUser?.role || "User"} 
+          setProfile={() => {}} // This is now handled by auth context
+          currentUser={currentUser}
+        />
+      </ProtectedRoute>
+      
       {/* Floating AI Assistant Chatbot */}
       {showBot && (
         <>
@@ -71,6 +95,14 @@ function App() {
         <FaRobot className="text-2xl" />
       </button>
     </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

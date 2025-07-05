@@ -3,19 +3,20 @@ import { FaBell, FaSignOutAlt, FaUser, FaUserShield, FaHeadset, FaUsersCog, FaBa
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
 
-const profiles = [
-  { label: "User", icon: FaUser },
-  { label: "Admin", icon: FaUserShield },
-  { label: "Technical Support", icon: FaHeadset },
-  { label: "Operation Team", icon: FaUsersCog },
-];
+const roleIcons = {
+  "User": FaUser,
+  "Admin": FaUserShield,
+  "Technical Support": FaHeadset,
+  "Operation Team": FaUsersCog,
+};
 
-const Header = ({ onSignOut, profile, setProfile, sidebarOpen, setSidebarOpen }) => {
+const Header = ({ onSignOut, profile, currentUser, sidebarOpen, setSidebarOpen }) => {
   const [lang, setLang] = useState("BM");
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef();
-  const current = profiles.find((p) => p.label === profile) || profiles[0];
-  const CurrentIcon = current.icon;
+  
+  // Get the appropriate icon for the current role
+  const CurrentIcon = roleIcons[profile] || FaUser;
 
   // Close notification on outside click
   useEffect(() => {
@@ -79,6 +80,8 @@ const Header = ({ onSignOut, profile, setProfile, sidebarOpen, setSidebarOpen })
             BI
           </button>
         </div>
+        
+        {/* User Profile Display */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <motion.button
@@ -86,37 +89,54 @@ const Header = ({ onSignOut, profile, setProfile, sidebarOpen, setSidebarOpen })
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.3, type: "spring", stiffness: 200 }}
-              className="flex items-center gap-2 bg-black text-white dark:bg-white dark:text-black px-2 py-1 rounded text-sm font-bold focus:outline-none focus:ring-2 focus:ring-teal-400"
+              className="flex items-center gap-2 bg-black text-white dark:bg-white dark:text-black px-3 py-2 rounded text-sm font-bold focus:outline-none focus:ring-2 focus:ring-teal-400"
             >
               <CurrentIcon className="text-lg" />
-              <span className="hidden sm:inline">{current.label}</span>
+              <div className="hidden sm:block text-left">
+                <div className="text-xs opacity-90">{currentUser?.profile?.realName || 'User'}</div>
+                <div className="text-xs opacity-75">{profile}</div>
+              </div>
             </motion.button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="z-50">
-            <AnimatePresence>
-              {profiles.map((p) => {
-                const Icon = p.icon;
-                return (
-                  <DropdownMenuItem
-                    key={p.label}
-                    onClick={() => setProfile(p.label)}
-                    className={profile === p.label ? "font-bold bg-teal-100 dark:bg-neutral-800 flex items-center gap-2" : "flex items-center gap-2"}
-                  >
-                    <motion.span
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    >
-                      <Icon className="text-lg" />
-                    </motion.span>
-                    <span>{p.label}</span>
-                  </DropdownMenuItem>
-                );
-              })}
-            </AnimatePresence>
+          <DropdownMenuContent align="end" className="z-50 w-64">
+            <div className="p-3 border-b border-neutral-200 dark:border-neutral-700">
+              <div className="flex items-center gap-3">
+                <img 
+                  src={currentUser?.profile?.avatar || "https://randomuser.me/api/portraits/men/32.jpg"} 
+                  alt="Profile" 
+                  className="w-10 h-10 rounded-full"
+                />
+                <div>
+                  <div className="font-semibold text-black dark:text-white">
+                    {currentUser?.profile?.realName || 'User'}
+                  </div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                    {currentUser?.profile?.email || 'user@example.com'}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-500">
+                    {profile}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+              <FaUser className="text-lg" />
+              <span>View Profile</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+              <FaBell className="text-lg" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={onSignOut}
+              className="flex items-center gap-2 cursor-pointer text-red-600 dark:text-red-400"
+            >
+              <FaSignOutAlt className="text-lg" />
+              <span>Sign Out</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        
         <motion.span
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -178,16 +198,6 @@ const Header = ({ onSignOut, profile, setProfile, sidebarOpen, setSidebarOpen })
             )}
           </AnimatePresence>
         </motion.span>
-        <motion.button
-          onClick={onSignOut}
-          aria-label="Sign out"
-          className="bg-transparent border-none p-0 m-0 cursor-pointer"
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.3, type: "spring", stiffness: 200 }}
-        >
-          <FaSignOutAlt className="text-black dark:text-white" />
-        </motion.button>
       </div>
     </motion.div>
   );

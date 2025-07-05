@@ -243,7 +243,7 @@ function FeedbackModal({ open, onClose, feedbackText, setFeedbackText, feedbackR
   );
 }
 
-const Dashboard = ({ onLogout, profile, setProfile }) => {
+const Dashboard = ({ onLogout, profile, setProfile, currentUser }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [view, setView] = useState("dashboard");
@@ -260,24 +260,28 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
   const [showProfileSetting, setShowProfileSetting] = useState(false);
   const [submittedFeedback, setSubmittedFeedback] = useState(null);
-  const [userProfile, setUserProfile] = useState({
-    username: "John Doe",
-    contact: "+1 234 567 8901",
-    email: "john.doe@example.com",
-    department: "IT Support",
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg"
-  });
+  
+  // Use authenticated user's profile data
+  const [userProfile, setUserProfile] = useState(
+    currentUser?.profile || {
+      username: "John Doe",
+      contact: "+1 234 567 8901",
+      email: "john.doe@example.com",
+      department: "IT Support",
+      avatar: "https://randomuser.me/api/portraits/men/32.jpg"
+    }
+  );
   const [profileImage, setProfileImage] = useState(userProfile.avatar);
   const [profileForm, setProfileForm] = useState({
-    username: "John Doe",
+    username: userProfile.username || "John Doe",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-    email: "john.doe@example.com",
-    realName: "John Doe",
-    accessLevel: "User",
-    projectAccessLevel: "Basic",
-    contact: "+1 234 567 8901"
+    email: userProfile.email || "john.doe@example.com",
+    realName: userProfile.realName || "John Doe",
+    accessLevel: userProfile.accessLevel || "User",
+    projectAccessLevel: userProfile.projectAccessLevel || "Basic",
+    contact: userProfile.contact || "+1 234 567 8901"
   });
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editTicket, setEditTicket] = useState(null);
@@ -483,7 +487,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-blue-100 via-teal-50 to-green-100 dark:bg-gradient-to-br dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900 transition-colors">
       <div className="flex flex-1 relative">
         {(!isMobile || sidebarOpen) && (
-          <Sidebar profile={profile} setSidebarOpen={setSidebarOpen} onNavigate={handleNavigate} />
+          <Sidebar profile={profile} setSidebarOpen={setSidebarOpen} onNavigate={handleNavigate} currentUser={currentUser} />
         )}
         {/* Backdrop for mobile */}
         {sidebarOpen && isMobile && (
@@ -493,7 +497,7 @@ const Dashboard = ({ onLogout, profile, setProfile }) => {
           />
         )}
         <div className="flex-1 flex flex-col">
-          <Header onSignOut={onLogout} profile={profile} setProfile={setProfile} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <Header onSignOut={onLogout} profile={profile} currentUser={currentUser} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           <main className="flex-1 p-6 space-y-6">
             <AnimatePresence mode="wait">
               {view === "dashboard" && (
